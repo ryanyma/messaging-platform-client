@@ -11,6 +11,14 @@ import Avatar from "@material-ui/core/Avatar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Box from "@material-ui/core/Box";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import { gql } from "apollo-boost";
+import { useMutation } from "@apollo/react-hooks";
+
+const REGISTER_USER = gql`
+  mutation($username: String!, $email: String!, $password: String!) {
+    register(username: $username, email: $email, password: $password)
+  }
+`;
 
 const CopyRight = () => {
   return (
@@ -59,7 +67,7 @@ const SignupSchema = Yup.object().shape({
     .required("Please enter a password.")
 });
 
-const CustomTextField = ({ label, ...props }) => {
+const CustomTextField = ({ label, type, ...props }) => {
   const [field, meta] = useField(props);
   const errorText = meta.error && meta.touched ? meta.error : "";
   return (
@@ -67,17 +75,18 @@ const CustomTextField = ({ label, ...props }) => {
       {...field}
       variant="outlined"
       label={label}
+      type={type}
       required
       fullWidth
       helperText={errorText}
       error={!!errorText}
-      autoFocus
     />
   );
 };
 
 export default function Register() {
   const classes = useStyles();
+  const [registerUser, { data }] = useMutation(REGISTER_USER);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -95,12 +104,18 @@ export default function Register() {
           onSubmit={(values, { setSubmitting }) => {
             console.log(values);
             setTimeout(() => {
-              alert(JSON.stringify(values, null, 2));
+              registerUser({
+                variables: {
+                  username: values.username,
+                  email: values.email,
+                  password: values.password,
+                }
+              });
               setSubmitting(false);
             }, 400);
           }}
         >
-          {({ values, isSubmitting }) => (
+          {({ values, isSubmitting, handleBlur}) => (
             <Form className={classes.form}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
@@ -108,14 +123,17 @@ export default function Register() {
                     name="username"
                     id="username"
                     label="Username"
+                    type="input"
+                    onBlur={handleBlur}
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <CustomTextField name="email" type="email" label="Email" />
+                  <CustomTextField id="email" name="email" type="email" label="Email" />
                 </Grid>
                 <Grid item xs={12}>
                   <CustomTextField
                     name="password"
+                    id="password"
                     type="password"
                     label="Password"
                   />
