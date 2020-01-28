@@ -2,7 +2,7 @@ import React from "react";
 import { gql } from "apollo-boost";
 import { useQuery } from "@apollo/react-hooks";
 
-function Home() {
+const Home = () => {
   const { loading, error, data } = useQuery(gql`
     {
       allUsers {
