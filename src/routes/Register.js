@@ -16,7 +16,13 @@ import { useMutation } from "@apollo/react-hooks";
 
 const REGISTER_USER = gql`
   mutation($username: String!, $email: String!, $password: String!) {
-    register(username: $username, email: $email, password: $password)
+    register(username: $username, email: $email, password: $password) {
+        ok
+        errors {
+            path
+            message
+        }
+    }
   }
 `;
 
@@ -56,14 +62,14 @@ const useStyles = makeStyles(theme => ({
 const SignupSchema = Yup.object().shape({
   username: Yup.string()
     .min(2, "Too Short!")
-    .max(50, "Too Long!")
+    .max(25, "Too Long!")
     .required("Please enter a username."),
   email: Yup.string()
     .email("Invalid email")
     .required("Please enter an email."),
   password: Yup.string()
     .min(2, "Too Short!")
-    .max(50, "Too Long!")
+    .max(25, "Too Long!")
     .required("Please enter a password.")
 });
 
