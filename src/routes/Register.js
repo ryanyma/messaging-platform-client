@@ -11,20 +11,31 @@ import Avatar from "@material-ui/core/Avatar";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Box from "@material-ui/core/Box";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+import { withRouter } from 'react-router-dom';
+import { useHistory } from "react-router-dom";
+
 import { gql } from "apollo-boost";
-import { useMutation } from "@apollo/react-hooks";
+import {
+  useMutation
+} from "@apollo/react-hooks";
 
 const REGISTER_USER = gql`
   mutation($username: String!, $email: String!, $password: String!) {
     register(username: $username, email: $email, password: $password) {
-        ok
-        errors {
-            path
-            message
-        }
+      ok
+      errors {
+        path
+        message
+      }
     }
   }
 `;
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const CopyRight = () => {
   return (
@@ -90,9 +101,26 @@ const CustomTextField = ({ label, type, ...props }) => {
   );
 };
 
-export default function Register() {
+
+
+const Register = () => {
+
+  const [open, setOpen] = React.useState(false);
   const classes = useStyles();
-  const [registerUser, { data }] = useMutation(REGISTER_USER);
+
+  const history = useHistory();
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  const [
+    registerUser,
+  ] = useMutation(REGISTER_USER);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -107,21 +135,34 @@ export default function Register() {
         <Formik
           initialValues={{ username: "", email: "", password: "" }}
           validationSchema={SignupSchema}
-          onSubmit={(values, { setSubmitting }) => {
+          onSubmit={(values, { setSubmitting, setFieldError}) => {
             console.log(values);
-            setTimeout(() => {
-              registerUser({
+            setTimeout(async () => {
+              const response = await registerUser({
                 variables: {
                   username: values.username,
                   email: values.email,
-                  password: values.password,
+                  password: values.password
                 }
               });
-              setSubmitting(false);
+              const { ok, errors } = response.data.register;
+              if (ok) {
+                setOpen(false)
+                setSubmitting(false);
+                history.push("/");
+              } else {
+                setFieldError("general", errors[0].message);
+              //   setOpen(true);
+              //   setTimeout(() => {
+              //     setOpen(false);
+              // }, 5000);
+              }
+              console.log(response);
+              
             }, 400);
           }}
         >
-          {({ values, isSubmitting, handleBlur}) => (
+          {({ values, errors, status, touched, onChange, isSubmitting, handleBlur }) => (
             <Form className={classes.form}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
@@ -130,11 +171,15 @@ export default function Register() {
                     id="username"
                     label="Username"
                     type="input"
-                    onBlur={handleBlur}
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <CustomTextField id="email" name="email" type="email" label="Email" />
+                  <CustomTextField
+                    id="email"
+                    name="email"
+                    type="email"
+                    label="Email"
+                  />
                 </Grid>
                 <Grid item xs={12}>
                   <CustomTextField
@@ -161,8 +206,21 @@ export default function Register() {
                     </Link>
                   </Grid>
                 </Grid>
+
                 <pre>{JSON.stringify(values, null, 2)}</pre>
               </Grid>
+              <Snackbar
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                open={open && !!errors.general}
+                onClose={handleClose}
+              >
+                <Alert onClose={handleClose} severity="error">
+                  {errors.general}
+                </Alert>
+              </Snackbar>
             </Form>
           )}
         </Formik>
@@ -173,3 +231,5 @@ export default function Register() {
     </Container>
   );
 }
+
+export default withRouter(Register);
