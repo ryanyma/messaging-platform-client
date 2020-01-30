@@ -1,25 +1,23 @@
-import React from "react";
-import { Formik, Form, useField } from "formik";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import Link from "@material-ui/core/Link";
-import { Button, TextField } from "@material-ui/core";
-import * as Yup from "yup";
-import { makeStyles } from "@material-ui/core/styles";
-import Container from "@material-ui/core/Container";
-import Avatar from "@material-ui/core/Avatar";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Box from "@material-ui/core/Box";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import Snackbar from "@material-ui/core/Snackbar";
-import MuiAlert from "@material-ui/lab/Alert";
-import { withRouter } from 'react-router-dom';
-import { useHistory } from "react-router-dom";
+import React from 'react';
+import { Formik, Form } from 'formik';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
+import { Button } from '@material-ui/core';
+import * as Yup from 'yup';
+import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+import Avatar from '@material-ui/core/Avatar';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Box from '@material-ui/core/Box';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Snackbar from '@material-ui/core/Snackbar';
+import { useHistory } from 'react-router-dom';
+import CustomTextField from '../components/CustomTextField';
+import CustomAlert from '../components/CustomTextField';
 
-import { gql } from "apollo-boost";
-import {
-  useMutation
-} from "@apollo/react-hooks";
+import { gql } from 'apollo-boost';
+import { useMutation } from '@apollo/react-hooks';
 
 const REGISTER_USER = gql`
   mutation($username: String!, $email: String!, $password: String!) {
@@ -33,36 +31,29 @@ const REGISTER_USER = gql`
   }
 `;
 
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-
-const CopyRight = () => {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
-        pepper
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-};
+const CopyRight = () => (
+  <Typography variant="body2" color="textSecondary" align="center">
+    {'Copyright © '}
+    <Link color="inherit" href="/">
+      pepper
+    </Link>{' '}
+    {new Date().getFullYear()}.
+  </Typography>
+);
 
 const useStyles = makeStyles(theme => ({
   paper: {
     marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center"
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.warning.light
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
+    width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(3)
   },
   submit: {
@@ -72,42 +63,21 @@ const useStyles = makeStyles(theme => ({
 
 const SignupSchema = Yup.object().shape({
   username: Yup.string()
-    .min(2, "Too Short!")
-    .max(25, "Too Long!")
-    .required("Please enter a username."),
+    .min(2, 'Too Short!')
+    .max(25, 'Too Long!')
+    .required('Please enter a username.'),
   email: Yup.string()
-    .email("Invalid email")
-    .required("Please enter an email."),
+    .email('Invalid email')
+    .required('Please enter an email.'),
   password: Yup.string()
-    .min(2, "Too Short!")
-    .max(25, "Too Long!")
-    .required("Please enter a password.")
+    .min(2, 'Too Short!')
+    .max(25, 'Too Long!')
+    .required('Please enter a password.')
 });
 
-const CustomTextField = ({ label, type, ...props }) => {
-  const [field, meta] = useField(props);
-  const errorText = meta.error && meta.touched ? meta.error : "";
-  return (
-    <TextField
-      {...field}
-      variant="outlined"
-      label={label}
-      type={type}
-      required
-      fullWidth
-      helperText={errorText}
-      error={!!errorText}
-    />
-  );
-};
-
-
-
 const Register = () => {
-
   const [open, setOpen] = React.useState(false);
   const classes = useStyles();
-
   const history = useHistory();
 
   const handleClose = (event, reason) => {
@@ -118,9 +88,7 @@ const Register = () => {
     setOpen(false);
   };
 
-  const [
-    registerUser,
-  ] = useMutation(REGISTER_USER);
+  const [registerUser] = useMutation(REGISTER_USER);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -133,9 +101,9 @@ const Register = () => {
           Sign up
         </Typography>
         <Formik
-          initialValues={{ username: "", email: "", password: "" }}
+          initialValues={{ username: '', email: '', password: '' }}
           validationSchema={SignupSchema}
-          onSubmit={(values, { setSubmitting, setFieldError}) => {
+          onSubmit={(values, { setSubmitting, setFieldError }) => {
             console.log(values);
             setTimeout(async () => {
               const response = await registerUser({
@@ -147,22 +115,26 @@ const Register = () => {
               });
               const { ok, errors } = response.data.register;
               if (ok) {
-                setOpen(false)
+                setOpen(false);
                 setSubmitting(false);
-                history.push("/");
+                history.push('/');
               } else {
-                setFieldError("general", errors[0].message);
-              //   setOpen(true);
-              //   setTimeout(() => {
-              //     setOpen(false);
-              // }, 5000);
+                setFieldError('general', errors[0].message);
+                setOpen(true);
+                setSubmitting(false);
+                setTimeout(() => {
+                  setOpen(false);
+                }, 5000);
               }
               console.log(response);
-              
             }, 400);
           }}
         >
-          {({ values, errors, status, touched, onChange, isSubmitting, handleBlur }) => (
+          {({
+            values,
+            errors,
+            isSubmitting,
+          }) => (
             <Form className={classes.form}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
@@ -201,7 +173,7 @@ const Register = () => {
                 </Button>
                 <Grid container justify="flex-end">
                   <Grid item>
-                    <Link href="#" variant="body2">
+                    <Link href="/login" variant="body2">
                       Already have an account? Sign in
                     </Link>
                   </Grid>
@@ -212,14 +184,14 @@ const Register = () => {
               <Snackbar
                 anchorOrigin={{
                   vertical: 'bottom',
-                  horizontal: 'right',
+                  horizontal: 'right'
                 }}
                 open={open && !!errors.general}
                 onClose={handleClose}
               >
-                <Alert onClose={handleClose} severity="error">
+                <CustomAlert onClose={handleClose} severity="error">
                   {errors.general}
-                </Alert>
+                </CustomAlert>
               </Snackbar>
             </Form>
           )}
@@ -230,6 +202,6 @@ const Register = () => {
       </Box>
     </Container>
   );
-}
+};
 
-export default withRouter(Register);
+export default Register;
