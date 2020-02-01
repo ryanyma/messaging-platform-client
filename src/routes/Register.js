@@ -14,7 +14,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Snackbar from '@material-ui/core/Snackbar';
 import { useHistory } from 'react-router-dom';
 import CustomTextField from '../components/CustomTextField';
-import CustomAlert from '../components/CustomTextField';
+import CustomAlert from '../components/CustomAlert';
 
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
@@ -114,6 +114,7 @@ const Register = () => {
                 }
               });
               const { ok, errors } = response.data.register;
+              console.log(errors)
               if (ok) {
                 setOpen(false);
                 setSubmitting(false);
@@ -139,8 +140,8 @@ const Register = () => {
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <CustomTextField
-                    name="username"
                     id="username"
+                    name="username"
                     label="Username"
                     type="input"
                   />
@@ -155,8 +156,8 @@ const Register = () => {
                 </Grid>
                 <Grid item xs={12}>
                   <CustomTextField
-                    name="password"
                     id="password"
+                    name="password"
                     type="password"
                     label="Password"
                   />
@@ -186,7 +187,8 @@ const Register = () => {
                   vertical: 'bottom',
                   horizontal: 'right'
                 }}
-                open={open && !!errors.general}
+                autoHideDuration={6000}
+                open={open}
                 onClose={handleClose}
               >
                 <CustomAlert onClose={handleClose} severity="error">

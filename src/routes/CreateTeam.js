@@ -19,12 +19,10 @@ import { useHistory } from 'react-router-dom';
 
 import { useMutation } from '@apollo/react-hooks';
 
-const LOGIN_USER = gql`
-  mutation($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
+const CREATE_TEAM = gql`
+  mutation($name: String!) {
+    createTeam(name: $name) {
       ok
-      token
-      refreshToken
       errors {
         path
         message
@@ -34,10 +32,10 @@ const LOGIN_USER = gql`
 `;
 
 const LoginSchema = Yup.object().shape({
-  email: Yup.string()
-    .email('Invalid email')
-    .required('Please enter an email.'),
-  password: Yup.string().required('Please enter a password.')
+    name: Yup.string()
+        .min(2, 'Too Short!')
+        .max(25, 'Too Long!')
+        .required('Please enter a team name.'),
 });
 
 function Copyright() {
@@ -86,12 +84,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function Login() {
+export default function CreateTeam() {
   const classes = useStyles();
   const history = useHistory();
   const [open, setOpen] = React.useState(false);
 
-  const [loginUser] = useMutation(LOGIN_USER);
+  const [createTeam] = useMutation(CREATE_TEAM);
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -103,25 +101,23 @@ export default function Login() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Create A Team
           </Typography>
           <Formik
-            initialValues={{ email: '', password: '' }}
+            initialValues={{ name:'' }}
             validationSchema={LoginSchema}
             onSubmit={(values, { setSubmitting, setFieldError }) => {
               setTimeout(async () => {
-                const response = await loginUser({
+                const response = await createTeam({
                   variables: {
-                    email: values.email,
-                    password: values.password
+                    name: values.name
                   }
                 });
-                const { ok, errors, token, refreshToken } = response.data.login;
+                const { ok, errors } = response.data.createTeam;
                 if (ok) {
+                  console.log(response)
                   setOpen(false);
                   setSubmitting(false);
-                  localStorage.setItem('token', token);
-                  localStorage.setItem('refreshToken', refreshToken);
                   history.push('/');
                 } else {
                   setFieldError('general', errors[0].message);
@@ -143,18 +139,10 @@ export default function Login() {
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <CustomTextField
-                      id="email"
-                      name="email"
-                      type="email"
-                      label="Email"
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <CustomTextField
-                      name="password"
-                      id="password"
-                      type="password"
-                      label="Password"
+                      id="name"
+                      name="name"
+                      type="input"
+                      label="Name"
                     />
                   </Grid>
                   <Button
@@ -165,7 +153,7 @@ export default function Login() {
                     disabled={isSubmitting}
                     className={classes.submit}
                   >
-                    Sign In
+                    Create
                   </Button>
                   <Grid container>
                     <Grid item>
@@ -200,9 +188,6 @@ export default function Login() {
             )}
           </Formik>
         </div>
-        <Box mt={5}>
-          <Copyright />
-        </Box>
       </Grid>
     </Grid>
   );
