@@ -4,7 +4,6 @@ import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
@@ -23,6 +22,9 @@ const CREATE_TEAM = gql`
   mutation($name: String!) {
     createTeam(name: $name) {
       ok
+      team {
+        id
+      }
       errors {
         path
         message
@@ -90,7 +92,6 @@ export default function CreateTeam() {
   const [open, setOpen] = React.useState(false);
 
   const [createTeam] = useMutation(CREATE_TEAM);
-
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
@@ -113,12 +114,12 @@ export default function CreateTeam() {
                     name: values.name
                   }
                 });
-                const { ok, errors } = response.data.createTeam;
+                const { ok, errors, team} = response.data.createTeam;
                 if (ok) {
                   console.log(response)
                   setOpen(false);
                   setSubmitting(false);
-                  history.push('/');
+                  history.push(`/view-team/${team.id}`);
                 } else {
                   setFieldError('general', errors[0].message);
                   setOpen(true);

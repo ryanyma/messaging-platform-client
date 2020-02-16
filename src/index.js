@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { ApolloClient, InMemoryCache } from 'apollo-boost';
-import { ApolloLink, split } from "apollo-link";
+import { ApolloLink } from "apollo-link";
 import { createHttpLink } from "apollo-link-http";
 import { setContext } from "apollo-link-context";
 import { ApolloProvider } from '@apollo/react-hooks';
-import { getMainDefinition } from 'apollo-utilities';
 import * as serviceWorker from './serviceWorker';
 import Routes from './routes';
+import { createGlobalStyle } from "styled-components";
 
 const httpLink = createHttpLink({ uri: 'http://localhost:8080/graphql' });
 
@@ -55,8 +55,18 @@ const client = new ApolloClient({
   cache: new InMemoryCache()
 });
 
+const GlobalStyles = createGlobalStyle`
+  @import url('https://fonts.googleapis.com/css?family=Open+Sans');
+  body {
+    margin:0;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+`
+
 const App = () => (
   <ApolloProvider client={client}>
+    <GlobalStyles/>
     <Routes />
   </ApolloProvider>
 );
