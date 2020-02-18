@@ -1,5 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import Grid from '@material-ui/core/Grid';
+import Icon from '@material-ui/core/Icon';
+import {Link} from 'react-router-dom';
 
 const ChannelWrapper = styled.div`
   grid-column: 2;
@@ -29,15 +33,29 @@ const SideBarListItem = styled.li`
   }
 `;
 
-const SideBarListHeader = styled.li`${paddingLeft};`;
+const SideBarListHeader = styled.li`
+  ${paddingLeft};
+`;
 
-const PushLeft = styled.div`${paddingLeft};`;
+const PushLeft = styled.div`
+  ${paddingLeft};
+`;
 
-const Green = styled.span`color: #38978d;`;
+const Green = styled.span`
+  color: #38978d;
+`;
+
+const StyledGridContainer = styled(Grid)`
+  width: 100%;
+  list-style: none;
+  padding-left: 0px;
+`;
 
 const Bubble = ({ on = true }) => (on ? <Green>●</Green> : '○');
 
-const channel = ({ id, name }) => <SideBarListItem key={`channel-${id}`}># {name}</SideBarListItem>;
+const channel = ({ id, name }, teamId) => (
+  <Link key={`channel-${id}`} to={`/view-team/${teamId}/${id}`}><SideBarListItem># {name}</SideBarListItem></Link>
+);
 
 const user = ({ id, name }) => (
   <SideBarListItem key={`user-${id}`}>
@@ -45,9 +63,7 @@ const user = ({ id, name }) => (
   </SideBarListItem>
 );
 
-export default ({
-  teamName, username, channels, users,
-}) => (
+export default ({ teamName, username, channels, users, onAddChannelClick, onInvitePeopleClick, teamId}) => (
   <ChannelWrapper>
     <PushLeft>
       <TeamNameHeader>{teamName}</TeamNameHeader>
@@ -55,8 +71,10 @@ export default ({
     </PushLeft>
     <div>
       <SideBarList>
-        <SideBarListHeader>Channels</SideBarListHeader>
-        {channels.map(channel)}
+        <SideBarListHeader>
+          Channels <AddCircleOutlineIcon onClick={onAddChannelClick}></AddCircleOutlineIcon>
+        </SideBarListHeader>
+        {channels.map((c) => channel(c, teamId))}
       </SideBarList>
     </div>
     <div>
@@ -64,6 +82,11 @@ export default ({
         <SideBarListHeader>Direct Messages</SideBarListHeader>
         {users.map(user)}
       </SideBarList>
+    </div>
+    <div>
+      <a href="#invite-people" onClick={onInvitePeopleClick}>
+        + Invite people
+      </a>
     </div>
   </ChannelWrapper>
 );

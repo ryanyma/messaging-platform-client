@@ -1,65 +1,51 @@
 import React from 'react';
-import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
 import Channels from '../components/Channels';
 import Teams from '../components/Teams';
-import findIndex from 'lodash/findIndex';
+import AddChannelModal from '../components/AddChannelModal';
+import InvitePeopleModal from '../components/InvitePeopleModal';
 import decode from 'jwt-decode';
 
-const GET_ALL_TEAMS = gql`
-  {
-    allTeams {
-      id
-      name
-      channels {
-        id
-        name
-      }
-    }
-  }
-`;
+export default function Sidebar(props) {
+  const [openChannelModal, setChannelModalOpen] = React.useState(false);
+  const [openInviteModal, setInviteModalOpen] = React.useState(false);
 
+  const { teams, team } = props;
 
-const Sidebar = (params) => {
-    const { loading, error, data } = useQuery(GET_ALL_TEAMS);
-    if (loading) return 'Loading...';
-    if (error) return `Error! ${error.message}`;
-    
-    const allTeams = data.allTeams;
-    let teamIndex = 0;
+  let username = '';
 
-    if (params.currentTeamId) {
-      teamIndex = findIndex(allTeams, ['id', parseInt(params.currentTeamId, 10)])
-    }
+  try {
+    const token = localStorage.getItem('token');
+    let user = decode(token);
+    username = user.username;
+  } catch (err) {}
 
-    const team = allTeams[teamIndex];
-
-    let username = '';
-    try {
-        const token = localStorage.getItem('token');
-        let user = decode(token);
-        username = user.username;
-    } catch (err) {
-
-    }
-
-    return (
-        <React.Fragment>
-            <Teams teams={data.allTeams.map(team => ({
-                id: team.id,
-                letter: team.name.charAt(0).toUpperCase(),
-            }))} />
-            <Channels
-                teamName={team.name}
-                username={username}
-                channels={team.channels}
-                users={[
-                { id: 1, name: 'slackbot' },
-                { id: 2, name: 'user1' }
-                ]}
-            />
-        </React.Fragment>
-    );
-};
-
-export default Sidebar
+  return (
+    <React.Fragment>
+      <Teams teams={teams} />
+      <Channels
+        teamName={team.name}
+        username={username}
+        teamId={team.id}
+        channels={team.channels}
+        users={[
+          { id: 1, name: 'slackbot' },
+          { id: 2, name: 'user1' }
+        ]}
+        onAddChannelClick={() => setChannelModalOpen(true)}
+        onInvitePeopleClick={() => setInviteModalOpen(true)}
+      />
+      <AddChannelModal
+        teamId={team.id}
+        onClose={() => setChannelModalOpen(false)}
+        open={openChannelModal}
+        key="sidebar-add-channel-modal"
+      ></AddChannelModal>
+      <InvitePeopleModal
+        teamId={team.id}
+        onClose={() => setInviteModalOpen(false)}
+        open={openInviteModal}
+        key="sidebar-invite-people-modal"
+      ></InvitePeopleModal>
+    </React.Fragment>
+  );
+}

@@ -15,7 +15,6 @@ import * as Yup from 'yup';
 import Snackbar from '@material-ui/core/Snackbar';
 import { gql } from 'apollo-boost';
 import { useHistory } from 'react-router-dom';
-
 import { useMutation } from '@apollo/react-hooks';
 
 const CREATE_TEAM = gql`
@@ -33,7 +32,7 @@ const CREATE_TEAM = gql`
   }
 `;
 
-const LoginSchema = Yup.object().shape({
+const CreateTeamSchema = Yup.object().shape({
     name: Yup.string()
         .min(2, 'Too Short!')
         .max(25, 'Too Long!')
@@ -106,7 +105,7 @@ export default function CreateTeam() {
           </Typography>
           <Formik
             initialValues={{ name:'' }}
-            validationSchema={LoginSchema}
+            validationSchema={CreateTeamSchema}
             onSubmit={(values, { setSubmitting, setFieldError }) => {
               setTimeout(async () => {
                 const response = await createTeam({
