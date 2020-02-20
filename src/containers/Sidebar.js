@@ -12,11 +12,13 @@ export default function Sidebar(props) {
   const { teams, team } = props;
 
   let username = '';
+  let isOwner = false;
 
   try {
     const token = localStorage.getItem('token');
-    let user = decode(token);
+    const { user } = decode(token);
     username = user.username;
+    isOwner = user.id === team.owner
   } catch (err) {}
 
   return (
@@ -26,6 +28,7 @@ export default function Sidebar(props) {
         teamName={team.name}
         username={username}
         teamId={team.id}
+        isOwner={isOwner}
         channels={team.channels}
         users={[
           { id: 1, name: 'slackbot' },

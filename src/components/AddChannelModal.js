@@ -49,6 +49,12 @@ const useStyles = makeStyles(theme => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2)
+  },
+  closeIcon: {
+    cursor:'pointer', 
+    float:'right', 
+    marginTop: '5px', 
+    width: '20px'
   }
 }));
 
@@ -99,6 +105,7 @@ export default function AddChannelModal({ teamId, open, onClose }) {
               component="main"
               className={classes.heroContent}
             >
+              <CloseIcon className={classes.closeIcon} onClick={() => {onClose()}}></CloseIcon>
               <Typography
                 variant="h4"
                 align="left"

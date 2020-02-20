@@ -10,6 +10,7 @@ import { GET_ALL_TEAMS } from '../graphql/teams';
 import { useQuery } from '@apollo/react-hooks';
 import findIndex from 'lodash/findIndex';
 import { Redirect } from 'react-router-dom';
+import MessageContainer from '../containers/MessageContainer';
 
 export default function ViewTeam({
   match: {
@@ -22,8 +23,9 @@ export default function ViewTeam({
   if (error) return `Error! ${error.message}`;
 
   const allTeams = data.allTeams;
+  const teams = [...allTeams, ...data.invitedTeams];
 
-  if (!allTeams.length) {
+  if (!teams.length) {
     return (
       <Redirect
         to={{
@@ -33,43 +35,46 @@ export default function ViewTeam({
     );
   }
 
+
   let teamIndex = 0;
   let channelIndex = 0;
 
   const teamIdInt = parseInt(teamId, 10);
 
   if (teamIdInt) {
-    teamIndex = findIndex(allTeams, ['id', teamIdInt]);
+    teamIndex = findIndex(teams, ['id', teamIdInt]);
   }
 
-  const team = allTeams[teamIndex];
+  if (teamIndex === -1) {
+    teamIndex = 0;
+  }
+
+  const team = teams[teamIndex];
   const channelIdInt = parseInt(channelId, 10);
 
   if (channelIdInt) {
     channelIndex = findIndex(team.channels, ['id', channelIdInt]);
   }
 
+  if (channelIndex === -1) {
+    channelIndex = 0;
+  }
   const channel = team.channels[channelIndex];
 
   return (
     <AppLayout>
       {channel && <Header channelName={channel.name}>Header</Header>}
       <Sidebar
-        teams={allTeams.map(team => ({
+        teams={teams.map(team => ({
           id: team.id,
           letter: team.name.charAt(0).toUpperCase()
         }))}
         team={team}
       />
       {channel && (
-        <Messages channelId={channel.id}>
-          <ul className="message-list">
-            <li></li>
-            <li></li>
-          </ul>
-        </Messages>
+        <MessageContainer channelId={channel.id}/>
       )}
-      {channel && <SendMessage channelName={channel.name} />}
+      {channel && <SendMessage channelName={channel.name} channelId={channel.id}/>}
     </AppLayout>
   );
 }

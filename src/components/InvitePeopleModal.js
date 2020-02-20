@@ -50,6 +50,12 @@ const useStyles = makeStyles(theme => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2)
+  },
+  closeIcon: {
+    cursor:'pointer', 
+    float:'right', 
+    marginTop: '5px', 
+    width: '20px'
   }
 }));
 
@@ -80,6 +86,12 @@ export default function InvitePeopleModal({ teamId, open, onClose }) {
       >
         <Fade in={open}>
           <div className={classes.paper}>
+            <CloseIcon
+              className={classes.closeIcon}
+              onClick={() => {
+                onClose();
+              }}
+            ></CloseIcon>
             <Container
               maxWidth="sm"
               component="main"
@@ -97,7 +109,10 @@ export default function InvitePeopleModal({ teamId, open, onClose }) {
             <Formik
               initialValues={{ email: '' }}
               validationSchema={AddPeopleSchema}
-              onSubmit={(values, { props, setSubmitting, setFieldError, setErrors }) => {
+              onSubmit={(
+                values,
+                { props, setSubmitting, setFieldError, setErrors }
+              ) => {
                 setTimeout(async () => {
                   teamId = parseInt(teamId);
                   const response = await addTeamMember({
@@ -117,14 +132,20 @@ export default function InvitePeopleModal({ teamId, open, onClose }) {
                     setSubmitting(false);
                     onClose();
                   } else {
-                    
                     setErrors(normalizeErrors(errors));
                     setSubmitting(false);
                   }
                 }, 400);
               }}
             >
-              {({ values, errors, touched, isSubmitting, validateOnChange, validateOnBlur }) => (
+              {({
+                values,
+                errors,
+                touched,
+                isSubmitting,
+                validateOnChange,
+                validateOnBlur
+              }) => (
                 <Form className={classes.form}>
                   <Grid container spacing={2}>
                     <Grid item xs={12}>

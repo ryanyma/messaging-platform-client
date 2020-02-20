@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const TeamWrapper = styled.div`
   grid-column: 1;
@@ -16,8 +16,14 @@ const TeamList = styled.ul`
 `;
 
 const TeamListItem = styled.li`
+  text-decoration: none;
+
+  &:focus, &:hover, &:visited, &:link, &:active {
+      text-decoration: none;
+  }
   height: 50px;
   width: 50px;
+  text-decoration: none !important;
   background-color: #676066;
   color: #fff;
   margin: auto;
@@ -28,9 +34,12 @@ const TeamListItem = styled.li`
   font-size: 24px;
   border-radius: 11px;
   &:hover {
-    border-style: solid;
-    border-width: thick;
-    border-color: #767676;
+    background-color: #676066;
+    opacity: 0.5;
+    color: #fff;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
   }
 `;
 

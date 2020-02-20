@@ -22,12 +22,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const StyledAppBar = styled(AppBar)`
-  
-`;
-
-
-
 export default function DenseAppBar({channelName}) {
   const classes = useStyles();
 

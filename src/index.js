@@ -60,6 +60,7 @@ const GlobalStyles = createGlobalStyle`
   body {
     margin:0;
     font-family: 'Open Sans', sans-serif;
+    background-color: #F7F8FB;
   }
 
 `

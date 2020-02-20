@@ -114,6 +114,7 @@ export default function CreateTeam() {
                   }
                 });
                 const { ok, errors, team} = response.data.createTeam;
+                console.log(team);
                 if (ok) {
                   console.log(response)
                   setOpen(false);
