@@ -33,10 +33,10 @@ const CREATE_TEAM = gql`
 `;
 
 const CreateTeamSchema = Yup.object().shape({
-    name: Yup.string()
-        .min(2, 'Too Short!')
-        .max(25, 'Too Long!')
-        .required('Please enter a team name.'),
+  name: Yup.string()
+    .min(2, 'Too Short!')
+    .max(25, 'Too Long!')
+    .required('Please enter a team name.')
 });
 
 function Copyright() {
@@ -60,9 +60,7 @@ const useStyles = makeStyles(theme => ({
     backgroundImage: 'url(https://source.unsplash.com/random)',
     backgroundRepeat: 'no-repeat',
     backgroundColor:
-      theme.palette.type === 'dark'
-        ? theme.palette.grey[900]
-        : theme.palette.grey[50],
+      theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[50],
     backgroundSize: 'cover',
     backgroundPosition: 'center'
   },
@@ -104,7 +102,7 @@ export default function CreateTeam() {
             Create A Team
           </Typography>
           <Formik
-            initialValues={{ name:'' }}
+            initialValues={{ name: '' }}
             validationSchema={CreateTeamSchema}
             onSubmit={(values, { setSubmitting, setFieldError }) => {
               setTimeout(async () => {
@@ -113,10 +111,10 @@ export default function CreateTeam() {
                     name: values.name
                   }
                 });
-                const { ok, errors, team} = response.data.createTeam;
+                const { ok, errors, team } = response.data.createTeam;
                 console.log(team);
                 if (ok) {
-                  console.log(response)
+                  console.log(response);
                   setOpen(false);
                   setSubmitting(false);
                   history.push(`/view-team/${team.id}`);
@@ -131,20 +129,11 @@ export default function CreateTeam() {
               }, 400);
             }}
           >
-            {({
-              values,
-              errors,
-              isSubmitting,
-            }) => (
+            {({ values, errors, isSubmitting }) => (
               <Form className={classes.form}>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    <CustomTextField
-                      id="name"
-                      name="name"
-                      type="input"
-                      label="Name"
-                    />
+                    <CustomTextField id="name" name="name" type="input" label="Name" />
                   </Grid>
                   <Button
                     type="submit"

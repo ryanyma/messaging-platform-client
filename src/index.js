@@ -1,13 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { ApolloClient, InMemoryCache } from 'apollo-boost';
-import { ApolloLink } from "apollo-link";
+import { ApolloLink, split } from "apollo-link";
 import { createHttpLink } from "apollo-link-http";
 import { setContext } from "apollo-link-context";
 import { ApolloProvider } from '@apollo/react-hooks';
 import * as serviceWorker from './serviceWorker';
 import Routes from './routes';
 import { createGlobalStyle } from "styled-components";
+import { WebSocketLink } from 'apollo-link-ws';
+import { getMainDefinition } from 'apollo-utilities';
 
 const httpLink = createHttpLink({ uri: 'http://localhost:8080/graphql' });
 
@@ -38,17 +40,32 @@ const afterwareLink = new ApolloLink((operation, forward) => {
   });
 });
 
-const link = afterwareLink.concat(
+const linkWithMiddleware = afterwareLink.concat(
   middlewareLink.concat(httpLink)
 );
 
-// const link = split(
-//   ({ query }) => {
-//     const { kind, operation } = getMainDefinition(query);
-//     return kind === "OperationDefinition" && operation === "subscription";
-//   },
-//   httpLinkWithMiddleware
-// );
+// Create a WebSocket link:
+const wsLink = new WebSocketLink({
+  uri: `ws://localhost:8080/subscriptions`,
+  options: {
+    reconnect: true
+  }
+});
+
+// using the ability to split links, you can send data to each link
+// depending on what kind of operation is being sent
+const link = split(
+  // split based on operation type
+  ({ query }) => {
+    const definition = getMainDefinition(query);
+    return (
+      definition.kind === 'OperationDefinition' &&
+      definition.operation === 'subscription'
+    );
+  },
+  wsLink,
+  linkWithMiddleware,
+);
 
 const client = new ApolloClient({
   link,

@@ -10,11 +10,11 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(1)
   },
   textField: {
-    width: 550,
+    width: 550
   }
 }));
 
-export default function InputWithIcon({channelName}) {
+export default function InputWithIcon({ channelName }) {
   const classes = useStyles();
 
   return (
