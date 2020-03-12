@@ -19,23 +19,21 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function MessageContainerView({ data, subscribeToMore }) {
-  useEffect(() => {
-    const unsubscribe = subscribeToMore();
-    return () => {
-      unsubscribe();
-    };
-  });
+export default function DirectMessageContainerView({ data }) {
+  //   useEffect(() => {
+  //     const unsubscribe = subscribeToMore();
+  //     return () => {
+  //       unsubscribe();
+  //     };
+  //   });
 
-  console.log(data);
   const classes = useStyles();
-  const messages = data.getMessages;
-
+  const directMessages = data.directMessages;
   return (
     <Messages>
       <List className={classes.root}>
-        {messages.map(m => (
-          <ListItem key={`${m.id}-message`} alignItems="flex-start">
+        {directMessages.map(m => (
+          <ListItem key={`${m.id}-direct-message`} alignItems="flex-start">
             {/* <ListItemAvatar>
               <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
             </ListItemAvatar> */}
@@ -48,7 +46,7 @@ export default function MessageContainerView({ data, subscribeToMore }) {
                     className={classes.inline}
                     color="textPrimary"
                   >
-                    {m.user.username} {new Date(parseInt(m.createdAt, 10)).toString()}
+                    {m.sender.username} {new Date(parseInt(m.createdAt, 10)).toString()}
                   </Typography>
                   <br></br>
                   {`${m.text}`}

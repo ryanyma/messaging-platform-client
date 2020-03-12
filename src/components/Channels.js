@@ -15,6 +15,7 @@ const ChannelWrapper = styled.div`
 const TeamNameHeader = styled.h1`
   color: #fff;
   font-size: 20px;
+  text-decoration: none;
 `;
 
 const SideBarList = styled.ul`
@@ -27,6 +28,7 @@ const paddingLeft = 'padding-left: 10px';
 
 const SideBarListItem = styled.li`
   padding: 2px;
+  text-decoration: none;
   ${paddingLeft};
   &:hover {
     background: #3e313c;
@@ -34,11 +36,13 @@ const SideBarListItem = styled.li`
 `;
 
 const SideBarListHeader = styled.li`
+  text-decoration: none;
   ${paddingLeft};
 `;
 
 const PushLeft = styled.div`
   ${paddingLeft};
+  text-decoration: none;
 `;
 
 const Green = styled.span`
@@ -51,12 +55,16 @@ const StyledGridContainer = styled(Grid)`
   padding-left: 0px;
 `;
 
+const StyledLink = styled(Link)`
+  text-decoration: none;
+`;
+
 const Bubble = ({ on = true }) => (on ? <Green>●</Green> : '○');
 
 const channel = ({ id, name }, teamId) => (
-  <Link key={`channel-${id}`} to={`/view-team/${teamId}/${id}`}>
+  <StyledLink key={`channel-${id}`} to={`/view-team/${teamId}/${id}`}>
     <SideBarListItem># {name}</SideBarListItem>
-  </Link>
+  </StyledLink>
 );
 
 const user = ({ id, name }) => (
@@ -72,6 +80,7 @@ export default ({
   users,
   onAddChannelClick,
   onInvitePeopleClick,
+  onDirectMessageClick,
   teamId,
   isOwner
 }) => (
@@ -84,18 +93,17 @@ export default ({
       <SideBarList>
         <SideBarListHeader>
           Channels{' '}
-          {isOwner && (
-            <AddCircleOutlineIcon
-              onClick={onAddChannelClick}
-            ></AddCircleOutlineIcon>
-          )}
+          {isOwner && <AddCircleOutlineIcon onClick={onAddChannelClick}></AddCircleOutlineIcon>}
         </SideBarListHeader>
         {channels.map(c => channel(c, teamId))}
       </SideBarList>
     </div>
     <div>
       <SideBarList>
-        <SideBarListHeader>Direct Messages</SideBarListHeader>
+        <SideBarListHeader>
+          Direct Messages{' '}
+          <AddCircleOutlineIcon onClick={onDirectMessageClick}></AddCircleOutlineIcon>
+        </SideBarListHeader>
         {users.map(user)}
       </SideBarList>
     </div>

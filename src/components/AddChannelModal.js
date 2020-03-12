@@ -13,7 +13,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import * as Yup from 'yup';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
-import { GET_ALL_TEAMS } from '../graphql/teams';
+import { GET_ME } from '../graphql/teams';
 import findIndex from 'lodash/findIndex';
 
 const CREATE_CHANNEL = gql`
@@ -51,9 +51,9 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(3, 0, 2)
   },
   closeIcon: {
-    cursor:'pointer', 
-    float:'right', 
-    marginTop: '5px', 
+    cursor: 'pointer',
+    float: 'right',
+    marginTop: '5px',
     width: '20px'
   }
 }));
@@ -73,13 +73,13 @@ export default function AddChannelModal({ teamId, open, onClose }) {
         return;
       }
 
-      const data = cache.readQuery({ query: GET_ALL_TEAMS });
-      const teamIndex = findIndex(data.allTeams, ['id', teamId])
-      data.allTeams[teamIndex].channels.push(channel)
+      const data = cache.readQuery({ query: GET_ME });
+      const teamIndex = findIndex(data.me.teams, ['id', teamId]);
+      data.me.teams[teamIndex].channels.push(channel);
 
       cache.writeQuery({
-        query: GET_ALL_TEAMS,
-        data: data,
+        query: GET_ME,
+        data: data
       });
     }
   });
@@ -100,26 +100,17 @@ export default function AddChannelModal({ teamId, open, onClose }) {
       >
         <Fade in={open}>
           <div className={classes.paper}>
-            <Container
-              maxWidth="sm"
-              component="main"
-              className={classes.heroContent}
-            >
-              <CloseIcon className={classes.closeIcon} onClick={() => {onClose()}}></CloseIcon>
-              <Typography
-                variant="h4"
-                align="left"
-                color="textPrimary"
-                gutterBottom
-              >
+            <Container maxWidth="sm" component="main" className={classes.heroContent}>
+              <CloseIcon
+                className={classes.closeIcon}
+                onClick={() => {
+                  onClose();
+                }}
+              ></CloseIcon>
+              <Typography variant="h4" align="left" color="textPrimary" gutterBottom>
                 Create a channel
               </Typography>
-              <Typography
-                variant="subtitle1"
-                align="left"
-                color="textSecondary"
-                component="p"
-              >
+              <Typography variant="subtitle1" align="left" color="textSecondary" component="p">
                 Channels are where your team communicates.
               </Typography>
             </Container>
@@ -137,9 +128,9 @@ export default function AddChannelModal({ teamId, open, onClose }) {
                         channel: {
                           __typename: 'Channel',
                           id: -1,
-                          name: values.channel,
-                        },
-                      },
+                          name: values.channel
+                        }
+                      }
                     },
                     variables: {
                       teamId,
@@ -167,12 +158,7 @@ export default function AddChannelModal({ teamId, open, onClose }) {
                 <Form className={classes.form}>
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
-                      <CustomTextField
-                        id="channel"
-                        name="channel"
-                        type="input"
-                        label="Channel"
-                      />
+                      <CustomTextField id="channel" name="channel" type="input" label="Channel" />
                     </Grid>
                   </Grid>
 

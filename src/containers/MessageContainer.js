@@ -31,7 +31,8 @@ export default function MessageContainer({ channelId }) {
   const { loading, error, data, subscribeToMore } = useQuery(GET_MESSAGES, {
     variables: {
       channelId: channelId
-    }
+    },
+    fetchPolicy: 'network-only'
   });
 
   if (loading) return 'Loading...';
@@ -50,10 +51,7 @@ export default function MessageContainer({ channelId }) {
         // console.log(prev);
         // return Object.assign({}, prev, {
         //     entry: {
-        //       comments: [newFeedItem, ...prev.entry.comments]
-        //     }
-        //   });
-
+        //       comments: [newFeedItem, ...prev.entry.comme
         return {
           ...prev,
           getMessages: [...prev.getMessages, subscriptionData.data.newChannelMessage]

@@ -6,6 +6,7 @@ import Login from './Login';
 import CreateTeam from './CreateTeam';
 import ViewTeam from './ViewTeam';
 import decode from 'jwt-decode';
+import DirectMessages from './DirectMessages';
 
 const isAuthenticated = () => {
   const token = localStorage.getItem('token');
@@ -24,15 +25,16 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
     {...rest}
     render={props =>
-      (isAuthenticated() ? (
+      isAuthenticated() ? (
         <Component {...props} />
       ) : (
         <Redirect
           to={{
-            pathname: '/login',
+            pathname: '/login'
           }}
         />
-      ))}
+      )
+    }
   />
 );
 
@@ -42,7 +44,8 @@ export default () => (
       <Route path="/" exact component={Home} />
       <Route path="/register" exact component={Register} />
       <Route path="/login" exact component={Login} />
-      <PrivateRoute path="/view-team/:teamId?/:channelId?" exact component={ViewTeam}/>
+      <PrivateRoute path="/view-team/user/:teamId/:userId" exact component={DirectMessages} />
+      <PrivateRoute path="/view-team/:teamId?/:channelId?" exact component={ViewTeam} />
       <PrivateRoute path="/create-team" exact component={CreateTeam} />
     </Switch>
   </BrowserRouter>

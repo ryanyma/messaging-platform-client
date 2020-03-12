@@ -10,26 +10,26 @@ import { GET_ME } from '../graphql/teams';
 import { useQuery } from '@apollo/react-hooks';
 import findIndex from 'lodash/findIndex';
 import { Redirect } from 'react-router-dom';
-import MessageContainer from '../containers/MessageContainer';
+import DirectMessageContainer from '../containers/DirectMessageContainer';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 
-const CREATE_MESSAGE = gql`
-  mutation($channelId: Int!, $text: String!) {
-    createMessage(channelId: $channelId, text: $text)
+const CREATE_DIRECT_MESSAGE = gql`
+  mutation($receiverId: Int!, $text: String!, $teamId: Int!) {
+    createDirectMessage(receiverId: $receiverId, text: $text, teamId: $teamId)
   }
 `;
 
-export default function ViewTeam({
+export default function DirectMessages({
   match: {
-    params: { teamId, channelId }
+    params: { teamId, userId }
   }
 }) {
-  const [createMessage] = useMutation(CREATE_MESSAGE);
   const { loading, error, data } = useQuery(GET_ME, {
     fetchPolicy: 'network-only'
   });
-
+  const [createDirectMessage] = useMutation(CREATE_DIRECT_MESSAGE);
+  console.log(teamId, userId);
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;
 
@@ -59,20 +59,14 @@ export default function ViewTeam({
   }
 
   const team = teams[teamIndex];
-  const channelIdInt = parseInt(channelId, 10);
-
-  if (channelIdInt) {
-    channelIndex = findIndex(team.channels, ['id', channelIdInt]);
-  }
-
-  if (channelIndex === -1) {
-    channelIndex = 0;
-  }
-  const channel = team.channels[channelIndex];
+  console.log(typeof userId, typeof teamId);
+  userId = parseInt(userId, 10);
+  teamId = parseInt(teamId, 10);
+  console.log(typeof userId, typeof teamId);
 
   return (
     <AppLayout>
-      {channel && <Header channelName={channel.name}>Header</Header>}
+      {/* <Header channelName={channel.name}>Header</Header> */}
       <Sidebar
         teams={teams.map(team => ({
           id: team.id,
@@ -81,16 +75,13 @@ export default function ViewTeam({
         team={team}
         username={username}
       />
-      {channel && <MessageContainer channelId={channel.id} />}
-      {channel && (
-        <SendMessage
-          placeholder={channel.name}
-          onSubmit={async text => {
-            await createMessage({ variables: { text, channelId: channel.id } });
-          }}
-          channelId={channel.id}
-        />
-      )}
+      <DirectMessageContainer teamId={team.id} userId={userId} />
+      <SendMessage
+        onSubmit={async text => {
+          await createDirectMessage({ variables: { text, receiverId: userId, teamId } });
+        }}
+        placeholder={userId}
+      />
     </AppLayout>
   );
 }

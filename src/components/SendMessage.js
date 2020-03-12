@@ -2,18 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import InputWithIcon from './Input';
 import { Input } from '@material-ui/core';
-import { Formik, Form } from 'formik';
+import { Formik, withFormik, Form } from 'formik';
 import * as Yup from 'yup';
 import { makeStyles } from '@material-ui/core/styles';
 import CustomTextField from '../components/CustomTextField';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
-
-const CREATE_MESSAGE = gql`
-  mutation($channelId: Int!, $text: String!) {
-    createMessage(channelId: $channelId, text: $text)
-  }
-`;
 
 const Wrapper = styled.div`
   grid-column: 3;
@@ -29,9 +23,7 @@ const useStyles = makeStyles(theme => ({
     backgroundImage: 'url(https://source.unsplash.com/random)',
     backgroundRepeat: 'no-repeat',
     backgroundColor:
-      theme.palette.type === 'dark'
-        ? theme.palette.grey[900]
-        : theme.palette.grey[50],
+      theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[50],
     backgroundSize: 'cover',
     backgroundPosition: 'center'
   },
@@ -62,51 +54,46 @@ const StyledInput = styled(Input)`
   width: 750px;
 `;
 
-export default function SendMessage({ channelName, channelId }) {
+export default function SendMessage({ placeholder, onSubmit, channelId }) {
   const classes = useStyles();
-
-  const [createMessage] = useMutation(CREATE_MESSAGE);
 
   return (
     <Wrapper className={classes.textField}>
       <Formik
         initialValues={{ message: '' }}
-        onSubmit= {async (values, { setSubmitting, setFieldError, resetForm }) => {
-            if (!values.message || !values.message.trim()) {
-              setSubmitting(false);
-              return;
-            }
-            await createMessage({
-              variables: {
-                channelId,
-                text: values.message
-              }
-            });
-            resetForm(false);
-            // const { ok, errors, team } = response.data.createTeam;
-            // if (ok) {
-            //   console.log(response);
-            //   setOpen(false);
-            //   setSubmitting(false);
-            //   history.push(`/view-team/${team.id}`);
-            // } else {
-            //   setFieldError('general', errors[0].message);
-            //   setOpen(true);
-            //   setSubmitting(false);
-            //   setTimeout(() => {
-            //     setOpen(false);
-            //   }, 5000);
-            // }
+        onSubmit={async (values, { setSubmitting, resetForm }) => {
+          console.log(values);
+          if (!values.message || !values.message.trim()) {
+            setSubmitting(false);
+            return;
+          }
+          console.log(values);
+          await onSubmit(values.message);
+          resetForm(false);
+          // const { ok, errors, team } = response.data.createTeam;
+          // if (ok) {
+          //   console.log(response);
+          //   setOpen(false);
+          //   setSubmitting(false);
+          //   history.push(`/view-team/${team.id}`);
+          // } else {
+          //   setFieldError('general', errors[0].message);
+          //   setOpen(true);
+          //   setSubmitting(false);
+          //   setTimeout(() => {
+          //     setOpen(false);
+          //   }, 5000);
+          // }
         }}
       >
         {({ values, errors, isSubmitting }) => (
           <Form className={classes.form}>
-                <CustomTextField
-                  id="message"
-                  name="message"
-                  type="input"
-                  placeholder={`Message #${channelName}`}
-                />
+            <CustomTextField
+              id="message"
+              name="message"
+              type="input"
+              placeholder={`Message #${placeholder}`}
+            />
           </Form>
         )}
       </Formik>

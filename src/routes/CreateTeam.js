@@ -112,7 +112,7 @@ export default function CreateTeam() {
                   }
                 });
                 const { ok, errors, team } = response.data.createTeam;
-                console.log(team);
+                console.log(response.data.createTeam);
                 if (ok) {
                   console.log(response);
                   setOpen(false);

@@ -16,10 +16,12 @@ const TeamList = styled.ul`
 `;
 
 const TeamListItem = styled.li`
-  text-decoration: none;
-
-  &:focus, &:hover, &:visited, &:link, &:active {
-      text-decoration: none;
+  &:focus,
+  &:hover,
+  &:visited,
+  &:link,
+  &:active {
+    text-decoration: none;
   }
   height: 50px;
   width: 50px;
@@ -42,11 +44,14 @@ const TeamListItem = styled.li`
     border-radius: 8px;
   }
 `;
+const StyledLink = styled(Link)`
+  text-decoration: none;
+`;
 
 const team = ({ id, letter }) => (
-  <Link key={`team-${id}`} to={`/view-team/${id}`}>
+  <StyledLink key={`team-${id}`} to={`/view-team/${id}`}>
     <TeamListItem>{letter}</TeamListItem>
-  </Link>
+  </StyledLink>
 );
 
 export default ({ teams }) => (
