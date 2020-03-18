@@ -63,7 +63,7 @@ const useStyles = makeStyles(theme => ({
 function Autocomplete({ items, onChange }) {
   console.log(items);
   return (
-    <Downshift onChange={onChange} itemToString={item => (item ? item.value : '')}>
+    <Downshift onChange={onChange}>
       {({ getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex }) => (
         <div>
           <TextField {...getInputProps({ items: items })} />
@@ -136,33 +136,15 @@ export default function DirectMessageModal({ teamId, open, onClose }) {
               </Typography>
             </Container>
             <Formik
-              initialValues={{ users: [''] }}
+              initialValues={{}}
               onSubmit={(values, { props, setSubmitting, setFieldError, setErrors }) => {
-                setTimeout(async () => {
-                  //   teamId = parseInt(teamId);
-                  //   const response = await addTeamMember({
-                  //     variables: {
-                  //       teamId,
-                  //       email: values.email
-                  //     }
-                  //   });
-                  //   setSubmitting(false);
-                  //   const { ok, errors, teamMember } = response.data.addTeamMember;
-                  //   if (ok) {
-                  //     setSubmitting(false);
-                  //     onClose();
-                  //   } else {
-                  //     setErrors(normalizeErrors(errors));
-                  //     setSubmitting(false);
-                  //   }
-                }, 400);
+                onClose();
               }}
             >
               {({ values, errors, touched, isSubmitting, validateOnChange, validateOnBlur }) => (
                 <Form className={classes.form}>
                   <Autocomplete
                     items={data.getTeamMembers}
-                    placeholder="Hello"
                     onChange={selectedUser => {
                       history.push(`/view-team/user/${teamId}/${selectedUser.id}`);
                       onClose();
@@ -175,7 +157,7 @@ export default function DirectMessageModal({ teamId, open, onClose }) {
                     disabled={isSubmitting}
                     className={classes.submit}
                   >
-                    Add
+                    Cancel
                   </Button>
                 </Form>
               )}

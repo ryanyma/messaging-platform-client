@@ -20,16 +20,62 @@ const CREATE_DIRECT_MESSAGE = gql`
   }
 `;
 
+const GET_DM_ME_QUERY = gql`
+  query($userId: Int!) {
+    getUser(userId: $userId) {
+      username
+    }
+    me {
+      id
+      username
+      teams {
+        id
+        name
+        admin
+        directMessageMembers {
+          id
+          username
+        }
+        channels {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+// const queryMultiple = () => {
+//   const responseOne = useQuery(GET_ME);
+//   const responseTwo = useQuery(GET_DM_ME_QUERY);
+//   return [responseOne, responseTwo];
+// };
 export default function DirectMessages({
   match: {
     params: { teamId, userId }
   }
 }) {
-  const { loading, error, data } = useQuery(GET_ME, {
-    fetchPolicy: 'network-only'
+  const { loading, error, data } = useQuery(GET_DM_ME_QUERY, {
+    variables: {
+      userId: parseInt(userId, 10)
+    }
   });
-  const [createDirectMessage] = useMutation(CREATE_DIRECT_MESSAGE);
-  console.log(teamId, userId);
+  const [createDirectMessage] = useMutation(CREATE_DIRECT_MESSAGE, {
+    update: cache => {
+      const dataRead = cache.readQuery({ query: GET_ME });
+
+      const index = findIndex(dataRead.me.teams, ['id', team.id]);
+      dataRead.me.teams[index].directMessageMembers.push({
+        __typename: 'User',
+        id: userId,
+        username: data.getUser.username
+      });
+
+      cache.writeQuery({
+        query: GET_ME,
+        data: dataRead
+      });
+    }
+  });
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;
 
@@ -46,7 +92,6 @@ export default function DirectMessages({
   }
 
   let teamIndex = 0;
-  let channelIndex = 0;
 
   const teamIdInt = parseInt(teamId, 10);
 
@@ -59,14 +104,12 @@ export default function DirectMessages({
   }
 
   const team = teams[teamIndex];
-  console.log(typeof userId, typeof teamId);
   userId = parseInt(userId, 10);
   teamId = parseInt(teamId, 10);
-  console.log(typeof userId, typeof teamId);
 
   return (
     <AppLayout>
-      {/* <Header channelName={channel.name}>Header</Header> */}
+      <Header channelName={data.getUser.username}>Header</Header>
       <Sidebar
         teams={teams.map(team => ({
           id: team.id,
@@ -78,7 +121,12 @@ export default function DirectMessages({
       <DirectMessageContainer teamId={team.id} userId={userId} />
       <SendMessage
         onSubmit={async text => {
-          await createDirectMessage({ variables: { text, receiverId: userId, teamId } });
+          await createDirectMessage({
+            optimisticResponse: {
+              createDirectMessage: true
+            },
+            variables: { text, receiverId: userId, teamId }
+          });
         }}
         placeholder={userId}
       />

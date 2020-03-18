@@ -9,6 +9,10 @@ export const GET_ME = gql`
         id
         name
         admin
+        directMessageMembers {
+          id
+          username
+        }
         channels {
           id
           name
