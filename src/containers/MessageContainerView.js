@@ -27,7 +27,6 @@ export default function MessageContainerView({ data, subscribeToMore }) {
     };
   });
 
-  console.log(data);
   const classes = useStyles();
   const messages = data.getMessages;
 

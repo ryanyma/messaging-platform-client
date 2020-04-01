@@ -19,13 +19,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function DirectMessageContainerView({ data }) {
-  //   useEffect(() => {
-  //     const unsubscribe = subscribeToMore();
-  //     return () => {
-  //       unsubscribe();
-  //     };
-  //   });
+export default function DirectMessageContainerView({ data, subscribeToMore }) {
+  useEffect(() => {
+    const unsubscribe = subscribeToMore();
+    return () => {
+      unsubscribe();
+    };
+  });
 
   const classes = useStyles();
   const directMessages = data.directMessages;

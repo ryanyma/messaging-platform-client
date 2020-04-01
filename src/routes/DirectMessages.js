@@ -62,18 +62,23 @@ export default function DirectMessages({
   const [createDirectMessage] = useMutation(CREATE_DIRECT_MESSAGE, {
     update: cache => {
       const dataRead = cache.readQuery({ query: GET_ME });
-
       const index = findIndex(dataRead.me.teams, ['id', team.id]);
-      dataRead.me.teams[index].directMessageMembers.push({
-        __typename: 'User',
-        id: userId,
-        username: data.getUser.username
-      });
 
-      cache.writeQuery({
-        query: GET_ME,
-        data: dataRead
-      });
+      const userNotExists = dataRead.me.teams[index].directMessageMembers.every(
+        member => member.id !== parseInt(userId, 10)
+      );
+      if (userNotExists) {
+        dataRead.me.teams[index].directMessageMembers.push({
+          __typename: 'User',
+          id: userId,
+          username: data.getUser.username
+        });
+
+        cache.writeQuery({
+          query: GET_ME,
+          data: dataRead
+        });
+      }
     }
   });
   if (loading) return 'Loading...';
