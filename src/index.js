@@ -10,8 +10,9 @@ import Routes from './routes';
 import { createGlobalStyle } from 'styled-components';
 import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities';
+import createFileLink from './createFileLink';
 
-const httpLink = createHttpLink({ uri: 'http://localhost:8080/graphql' });
+const httpLink = createFileLink({ uri: 'http://localhost:8080/graphql' });
 
 const middlewareLink = setContext(() => ({
   headers: {

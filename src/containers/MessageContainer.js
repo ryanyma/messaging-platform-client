@@ -2,6 +2,7 @@ import React from 'react';
 import { gql } from 'apollo-boost';
 import { useQuery, useSubscription } from '@apollo/react-hooks';
 import MessageContainerView from './MessageContainerView';
+
 const GET_MESSAGES = gql`
   query($channelId: Int!) {
     getMessages(channelId: $channelId) {
@@ -30,9 +31,9 @@ const MESSAGE_SUBSCRIPTION = gql`
 export default function MessageContainer({ channelId }) {
   const { loading, error, data, subscribeToMore } = useQuery(GET_MESSAGES, {
     variables: {
-      channelId: channelId
+      channelId: channelId,
     },
-    fetchPolicy: 'network-only'
+    fetchPolicy: 'network-only',
   });
 
   if (loading) return 'Loading...';
@@ -42,7 +43,7 @@ export default function MessageContainer({ channelId }) {
     const unsubscribe = subscribeToMore({
       document: MESSAGE_SUBSCRIPTION,
       variables: {
-        channelId: channelId
+        channelId: channelId,
       },
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData) {
@@ -54,9 +55,9 @@ export default function MessageContainer({ channelId }) {
         //       comments: [newFeedItem, ...prev.entry.comme
         return {
           ...prev,
-          getMessages: [...prev.getMessages, subscriptionData.data.newChannelMessage]
+          getMessages: [...prev.getMessages, subscriptionData.data.newChannelMessage],
         };
-      }
+      },
     });
     return unsubscribe;
   };
@@ -65,6 +66,7 @@ export default function MessageContainer({ channelId }) {
     <MessageContainerView
       data={data}
       subscribeToMore={_subscribeToNewMessages}
+      channelId={channelId}
     ></MessageContainerView>
   );
 }

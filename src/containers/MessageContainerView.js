@@ -8,18 +8,19 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
+import FileUpload from '../components/FileUpload';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    backgroundColor: '#F7F8FB'
+    backgroundColor: '#F7F8FB',
   },
   inline: {
-    display: 'inline'
-  }
+    display: 'inline',
+  },
 }));
 
-export default function MessageContainerView({ data, subscribeToMore }) {
+export default function MessageContainerView({ data, subscribeToMore, channelId }) {
   useEffect(() => {
     const unsubscribe = subscribeToMore();
     return () => {
@@ -32,31 +33,33 @@ export default function MessageContainerView({ data, subscribeToMore }) {
 
   return (
     <Messages>
-      <List className={classes.root}>
-        {messages.map(m => (
-          <ListItem key={`${m.id}-message`} alignItems="flex-start">
-            {/* <ListItemAvatar>
+      <FileUpload disableClick channelId={channelId}>
+        <List className={classes.root}>
+          {messages.map((m) => (
+            <ListItem key={`${m.id}-message`} alignItems="flex-start">
+              {/* <ListItemAvatar>
               <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
             </ListItemAvatar> */}
-            <ListItemText
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    className={classes.inline}
-                    color="textPrimary"
-                  >
-                    {m.user.username} {new Date(parseInt(m.createdAt, 10)).toString()}
-                  </Typography>
-                  <br></br>
-                  {`${m.text}`}
-                </React.Fragment>
-              }
-            />
-          </ListItem>
-        ))}
-      </List>
+              <ListItemText
+                secondary={
+                  <React.Fragment>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      className={classes.inline}
+                      color="textPrimary"
+                    >
+                      {m.user.username} {new Date(parseInt(m.createdAt, 10)).toString()}
+                    </Typography>
+                    <br></br>
+                    {`${m.text}`}
+                  </React.Fragment>
+                }
+              />
+            </ListItem>
+          ))}
+        </List>
+      </FileUpload>
     </Messages>
   );
 }

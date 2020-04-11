@@ -6,18 +6,23 @@ import { Formik, withFormik, Form } from 'formik';
 import * as Yup from 'yup';
 import { makeStyles } from '@material-ui/core/styles';
 import CustomTextField from '../components/CustomTextField';
+import IconButton from '@material-ui/core/IconButton';
+import AddIcon from '@material-ui/icons/Add';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
+import FileUpload from './FileUpload';
 
 const Wrapper = styled.div`
   grid-column: 3;
   grid-row: 3;
   margin: 20px;
+  display: grid;
+  grid-template-columns: 3% 1fr;
 `;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    height: '100vh'
+    height: '100vh',
   },
   image: {
     backgroundImage: 'url(https://source.unsplash.com/random)',
@@ -25,29 +30,33 @@ const useStyles = makeStyles(theme => ({
     backgroundColor:
       theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[50],
     backgroundSize: 'cover',
-    backgroundPosition: 'center'
+    backgroundPosition: 'center',
   },
   paper: {
     margin: theme.spacing(8, 4),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.secondary.main,
   },
   form: {
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
-    backgroundColor: '#F7F8FB'
+    backgroundColor: '#F7F8FB',
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
+    margin: theme.spacing(3, 0, 2),
   },
   textField: {
-    backgroundColor: '#F7F8FB'
-  }
+    backgroundColor: '#F7F8FB',
+  },
+  button: {
+    padding: 0,
+    marginTop: theme.spacing(3),
+  },
 }));
 
 const StyledInput = styled(Input)`
@@ -59,6 +68,11 @@ export default function SendMessage({ placeholder, onSubmit, channelId }) {
 
   return (
     <Wrapper className={classes.textField}>
+      <FileUpload channelId={channelId}>
+        <IconButton className={classes.button} aria-label="add">
+          <AddIcon />
+        </IconButton>
+      </FileUpload>
       <Formik
         initialValues={{ message: '' }}
         onSubmit={async (values, { setSubmitting, resetForm }) => {

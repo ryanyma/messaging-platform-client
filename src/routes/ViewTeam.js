@@ -22,12 +22,12 @@ const CREATE_MESSAGE = gql`
 
 export default function ViewTeam({
   match: {
-    params: { teamId, channelId }
-  }
+    params: { teamId, channelId },
+  },
 }) {
   const [createMessage] = useMutation(CREATE_MESSAGE);
   const { loading, error, data } = useQuery(GET_ME, {
-    fetchPolicy: 'network-only'
+    fetchPolicy: 'network-only',
   });
 
   if (loading) return 'Loading...';
@@ -39,7 +39,7 @@ export default function ViewTeam({
     return (
       <Redirect
         to={{
-          pathname: '/create-team'
+          pathname: '/create-team',
         }}
       />
     );
@@ -74,9 +74,9 @@ export default function ViewTeam({
     <AppLayout>
       {channel && <Header channelName={channel.name}>Header</Header>}
       <Sidebar
-        teams={teams.map(team => ({
+        teams={teams.map((team) => ({
           id: team.id,
-          letter: team.name.charAt(0).toUpperCase()
+          letter: team.name.charAt(0).toUpperCase(),
         }))}
         team={team}
         username={username}
@@ -85,7 +85,7 @@ export default function ViewTeam({
       {channel && (
         <SendMessage
           placeholder={channel.name}
-          onSubmit={async text => {
+          onSubmit={async (text) => {
             await createMessage({ variables: { text, channelId: channel.id } });
           }}
           channelId={channel.id}
