@@ -4,7 +4,7 @@ import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Button from '@material-ui/core/Button';
 import Fade from '@material-ui/core/Fade';
-import { Formik, Form, useField } from 'formik';
+import { Formik, Form } from 'formik';
 import Grid from '@material-ui/core/Grid';
 import CustomTextField from '../components/CustomTextField';
 import Typography from '@material-ui/core/Typography';
@@ -28,38 +28,38 @@ const CREATE_CHANNEL = gql`
   }
 `;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
     borderRadius: 10,
     padding: theme.spacing(2, 4, 3),
-    outline: 0
+    outline: 0,
   },
   form: {
     width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   heroContent: {
-    padding: theme.spacing(3, 0, 2)
+    padding: theme.spacing(3, 0, 2),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
+    margin: theme.spacing(3, 0, 2),
   },
   closeIcon: {
     cursor: 'pointer',
     float: 'right',
     marginTop: '5px',
-    width: '20px'
-  }
+    width: '20px',
+  },
 }));
 
 const AddChannelSchema = Yup.object().shape({
-  channel: Yup.string().required('Please enter a team name.')
+  channel: Yup.string().required('Please enter a team name.'),
 });
 
 export default function AddChannelModal({ teamId, open, onClose }) {
@@ -79,9 +79,9 @@ export default function AddChannelModal({ teamId, open, onClose }) {
 
       cache.writeQuery({
         query: GET_ME,
-        data: data
+        data: data,
       });
-    }
+    },
   });
 
   return (
@@ -91,11 +91,13 @@ export default function AddChannelModal({ teamId, open, onClose }) {
         aria-describedby="transition-modal-description"
         className={classes.modal}
         open={open}
-        onClose={onClose}
+        onClose={() => {
+          onClose();
+        }}
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
-          timeout: 500
+          timeout: 500,
         }}
       >
         <Fade in={open}>
@@ -128,14 +130,14 @@ export default function AddChannelModal({ teamId, open, onClose }) {
                         channel: {
                           __typename: 'Channel',
                           id: -1,
-                          name: values.channel
-                        }
-                      }
+                          name: values.channel,
+                        },
+                      },
                     },
                     variables: {
                       teamId,
-                      name: values.channel
-                    }
+                      name: values.channel,
+                    },
                   });
                   setSubmitting(false);
                   onClose();
@@ -154,7 +156,7 @@ export default function AddChannelModal({ teamId, open, onClose }) {
                 }, 400);
               }}
             >
-              {({ values, errors, isSubmitting }) => (
+              {({ values, errors, isSubmitting, resetForm }) => (
                 <Form className={classes.form}>
                   <Grid container spacing={2}>
                     <Grid item xs={12}>

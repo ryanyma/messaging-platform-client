@@ -34,10 +34,8 @@ const LOGIN_USER = gql`
 `;
 
 const LoginSchema = Yup.object().shape({
-  email: Yup.string()
-    .email('Invalid email')
-    .required('Please enter an email.'),
-  password: Yup.string().required('Please enter a password.')
+  email: Yup.string().email('Invalid email').required('Please enter an email.'),
+  password: Yup.string().required('Please enter a password.'),
 });
 
 function Copyright() {
@@ -53,37 +51,35 @@ function Copyright() {
   );
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    height: '100vh'
+    height: '100vh',
   },
   image: {
     backgroundImage: 'url(https://source.unsplash.com/random)',
     backgroundRepeat: 'no-repeat',
     backgroundColor:
-      theme.palette.type === 'dark'
-        ? theme.palette.grey[900]
-        : theme.palette.grey[50],
+      theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[50],
     backgroundSize: 'cover',
-    backgroundPosition: 'center'
+    backgroundPosition: 'center',
   },
   paper: {
     margin: theme.spacing(8, 4),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.secondary.main,
   },
   form: {
     width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
-  }
+    margin: theme.spacing(3, 0, 2),
+  },
 }));
 
 export default function Login() {
@@ -113,8 +109,8 @@ export default function Login() {
                 const response = await loginUser({
                   variables: {
                     email: values.email,
-                    password: values.password
-                  }
+                    password: values.password,
+                  },
                 });
                 const { ok, errors, token, refreshToken } = response.data.login;
                 if (ok) {
@@ -122,7 +118,7 @@ export default function Login() {
                   setSubmitting(false);
                   localStorage.setItem('token', token);
                   localStorage.setItem('refreshToken', refreshToken);
-                  history.push('/');
+                  history.push('/view-team');
                 } else {
                   setFieldError('general', errors[0].message);
                   setOpen(true);
@@ -134,20 +130,11 @@ export default function Login() {
               }, 400);
             }}
           >
-            {({
-              values,
-              errors,
-              isSubmitting,
-            }) => (
+            {({ values, errors, isSubmitting }) => (
               <Form className={classes.form}>
                 <Grid container spacing={2}>
                   <Grid item xs={12}>
-                    <CustomTextField
-                      id="email"
-                      name="email"
-                      type="email"
-                      label="Email"
-                    />
+                    <CustomTextField id="email" name="email" type="email" label="Email" />
                   </Grid>
                   <Grid item xs={12}>
                     <CustomTextField
@@ -180,7 +167,7 @@ export default function Login() {
                 <Snackbar
                   anchorOrigin={{
                     vertical: 'bottom',
-                    horizontal: 'right'
+                    horizontal: 'right',
                   }}
                   open={open && !!errors.general}
                   onClose={() => {

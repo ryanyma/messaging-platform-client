@@ -16,14 +16,14 @@ const httpLink = createHttpLink({ uri: 'http://localhost:8080/graphql' });
 const middlewareLink = setContext(() => ({
   headers: {
     'x-token': localStorage.getItem('token'),
-    'x-refresh-token': localStorage.getItem('refreshToken')
-  }
+    'x-refresh-token': localStorage.getItem('refreshToken'),
+  },
 }));
 
 const afterwareLink = new ApolloLink((operation, forward) => {
-  return forward(operation).map(response => {
+  return forward(operation).map((response) => {
     const {
-      response: { headers }
+      response: { headers },
     } = operation.getContext();
     if (headers) {
       const token = headers.get('x-token');
@@ -49,11 +49,12 @@ const wsLink = new WebSocketLink({
   uri: `ws://localhost:8080/subscriptions`,
   options: {
     reconnect: true,
+    lazy: true,
     connectionParams: {
       token: localStorage.getItem('token'),
-      refreshToken: localStorage.getItem('refreshToken')
-    }
-  }
+      refreshToken: localStorage.getItem('refreshToken'),
+    },
+  },
 });
 
 // using the ability to split links, you can send data to each link
@@ -70,7 +71,7 @@ const link = split(
 
 const client = new ApolloClient({
   link,
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
 });
 
 const GlobalStyles = createGlobalStyle`

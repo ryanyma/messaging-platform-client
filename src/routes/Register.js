@@ -41,24 +41,24 @@ const CopyRight = () => (
   </Typography>
 );
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.warning.light
+    backgroundColor: theme.palette.warning.light,
   },
   form: {
     width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing(3),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
-  }
+    margin: theme.spacing(3, 0, 2),
+  },
 }));
 
 const SignupSchema = Yup.object().shape({
@@ -66,13 +66,11 @@ const SignupSchema = Yup.object().shape({
     .min(2, 'Too Short!')
     .max(25, 'Too Long!')
     .required('Please enter a username.'),
-  email: Yup.string()
-    .email('Invalid email')
-    .required('Please enter an email.'),
+  email: Yup.string().email('Invalid email').required('Please enter an email.'),
   password: Yup.string()
     .min(2, 'Too Short!')
     .max(25, 'Too Long!')
-    .required('Please enter a password.')
+    .required('Please enter a password.'),
 });
 
 const Register = () => {
@@ -110,15 +108,15 @@ const Register = () => {
                 variables: {
                   username: values.username,
                   email: values.email,
-                  password: values.password
-                }
+                  password: values.password,
+                },
               });
               const { ok, errors } = response.data.register;
-              console.log(errors)
+              console.log(errors);
               if (ok) {
                 setOpen(false);
                 setSubmitting(false);
-                history.push('/');
+                history.push('/login');
               } else {
                 setFieldError('general', errors[0].message);
                 setOpen(true);
@@ -131,36 +129,17 @@ const Register = () => {
             }, 400);
           }}
         >
-          {({
-            values,
-            errors,
-            isSubmitting,
-          }) => (
+          {({ values, errors, isSubmitting }) => (
             <Form className={classes.form}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
-                  <CustomTextField
-                    id="username"
-                    name="username"
-                    label="Username"
-                    type="input"
-                  />
+                  <CustomTextField id="username" name="username" label="Username" type="input" />
                 </Grid>
                 <Grid item xs={12}>
-                  <CustomTextField
-                    id="email"
-                    name="email"
-                    type="email"
-                    label="Email"
-                  />
+                  <CustomTextField id="email" name="email" type="email" label="Email" />
                 </Grid>
                 <Grid item xs={12}>
-                  <CustomTextField
-                    id="password"
-                    name="password"
-                    type="password"
-                    label="Password"
-                  />
+                  <CustomTextField id="password" name="password" type="password" label="Password" />
                 </Grid>
                 <Button
                   type="submit"
@@ -185,7 +164,7 @@ const Register = () => {
               <Snackbar
                 anchorOrigin={{
                   vertical: 'bottom',
-                  horizontal: 'right'
+                  horizontal: 'right',
                 }}
                 autoHideDuration={6000}
                 open={open}

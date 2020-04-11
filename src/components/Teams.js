@@ -57,5 +57,8 @@ const team = ({ id, letter }) => (
 export default ({ teams }) => (
   <TeamWrapper>
     <TeamList>{teams.map(team)}</TeamList>
+    <StyledLink key={'add-team'} to={'/create-team'}>
+      <TeamListItem>+</TeamListItem>
+    </StyledLink>
   </TeamWrapper>
 );
