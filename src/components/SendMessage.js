@@ -17,7 +17,7 @@ const Wrapper = styled.div`
   grid-row: 3;
   margin: 20px;
   display: grid;
-  grid-template-columns: 3% 1fr;
+  grid-template-columns: 50px auto;
 `;
 
 const useStyles = makeStyles((theme) => ({

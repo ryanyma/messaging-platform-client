@@ -33,7 +33,18 @@ export default function MessageContainerView({ data, subscribeToMore, channelId 
 
   return (
     <Messages>
-      <FileUpload disableClick channelId={channelId}>
+      <FileUpload
+        style={{
+          gridColumn: 3,
+          gridRow: 2,
+          backgroundColor: '#F7F8FB',
+          display: 'flex',
+          flexdirection: 'column-reverse',
+          overflowY: 'auto',
+        }}
+        disableClick
+        channelId={channelId}
+      >
         <List className={classes.root}>
           {messages.map((m) => (
             <ListItem key={`${m.id}-message`} alignItems="flex-start">

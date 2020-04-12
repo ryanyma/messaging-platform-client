@@ -32,7 +32,17 @@ export default function DirectMessageContainerView({ data, subscribeToMore }) {
   const directMessages = data.directMessages;
   return (
     <Messages>
-      <FileUpload disableClick>
+      <FileUpload
+        style={{
+          gridColumn: 3,
+          gridRow: 2,
+          backgroundColor: '#F7F8FB',
+          display: 'flex',
+          flexdirection: 'column-reverse',
+          overflowY: 'auto',
+        }}
+        disableClick
+      >
         <List className={classes.root}>
           {directMessages.map((m) => (
             <ListItem key={`${m.id}-direct-message`} alignItems="flex-start">

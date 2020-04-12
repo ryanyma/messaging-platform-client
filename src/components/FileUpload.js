@@ -9,11 +9,12 @@ const CREATE_FILE_MESSAGE = gql`
   }
 `;
 
-export default function FileUpload({ children, disableClick, channelId }) {
+export default function FileUpload({ children, disableClick, channelId, style = {} }) {
   const [createFileMessage] = useMutation(CREATE_FILE_MESSAGE);
 
   return (
     <Dropzone
+      style={style}
       noClick={disableClick}
       onDrop={async ([file]) => {
         const response = await createFileMessage({
