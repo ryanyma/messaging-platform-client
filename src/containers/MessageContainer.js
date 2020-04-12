@@ -11,6 +11,8 @@ const GET_MESSAGES = gql`
       user {
         username
       }
+      url
+      filetype
       createdAt
     }
   }
@@ -24,6 +26,8 @@ const MESSAGE_SUBSCRIPTION = gql`
       user {
         username
       }
+      url
+      filetype
       createdAt
     }
   }

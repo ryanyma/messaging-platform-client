@@ -9,6 +9,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import Typography from '@material-ui/core/Typography';
 import FileUpload from '../components/FileUpload';
+import RenderText from '../components/RenderText';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,6 +21,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const Message = ({ message: { url, text, filetype } }) => {
+  if (url) {
+    if (filetype.startsWith('image/')) {
+      return <img src={url} alt="" />;
+    } else if (filetype === 'text/plain') {
+      return <RenderText url={url} />;
+    } else if (filetype.startsWith('audio/')) {
+      return (
+        <div>
+          <audio controls>
+            <source src={url} type={filetype} />
+          </audio>
+        </div>
+      );
+    }
+  }
+  return <span>{text}</span>;
+};
 export default function MessageContainerView({ data, subscribeToMore, channelId }) {
   useEffect(() => {
     const unsubscribe = subscribeToMore();
@@ -63,7 +82,7 @@ export default function MessageContainerView({ data, subscribeToMore, channelId 
                       {m.user.username} {new Date(parseInt(m.createdAt, 10)).toString()}
                     </Typography>
                     <br></br>
-                    {`${m.text}`}
+                    <Message message={m} />
                   </React.Fragment>
                 }
               />
