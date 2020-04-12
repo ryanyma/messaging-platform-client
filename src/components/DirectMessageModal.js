@@ -20,44 +20,36 @@ import Downshift from 'downshift';
 import { useHistory } from 'react-router-dom';
 import FormControl from '@material-ui/core/FormControl';
 import TextField from '@material-ui/core/TextField';
+import { GET_TEAM_MEMBERS } from '../graphql/teams';
 
-const GET_TEAM_MEMBERS = gql`
-  query($teamId: Int!) {
-    getTeamMembers(teamId: $teamId) {
-      id
-      username
-    }
-  }
-`;
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
     borderRadius: 10,
     padding: theme.spacing(2, 4, 3),
-    outline: 0
+    outline: 0,
   },
   form: {
     width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   heroContent: {
-    padding: theme.spacing(3, 0, 2)
+    padding: theme.spacing(3, 0, 2),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
+    margin: theme.spacing(3, 0, 2),
   },
   closeIcon: {
     cursor: 'pointer',
     float: 'right',
     marginTop: '5px',
-    width: '20px'
-  }
+    width: '20px',
+  },
 }));
 
 function Autocomplete({ items, onChange }) {
@@ -71,7 +63,7 @@ function Autocomplete({ items, onChange }) {
             <div style={{ border: '1px solid #ccc' }}>
               {items
                 .filter(
-                  i => !inputValue || i.username.toLowerCase().includes(inputValue.toLowerCase())
+                  (i) => !inputValue || i.username.toLowerCase().includes(inputValue.toLowerCase())
                 )
                 .map((item, index) => (
                   <div
@@ -79,7 +71,7 @@ function Autocomplete({ items, onChange }) {
                     key={item.id}
                     style={{
                       backgroundColor: highlightedIndex === index ? 'gray' : 'white',
-                      fontWeight: selectedItem === item ? 'bold' : 'normal'
+                      fontWeight: selectedItem === item ? 'bold' : 'normal',
                     }}
                   >
                     {item.username}
@@ -99,12 +91,11 @@ export default function DirectMessageModal({ teamId, open, onClose }) {
   const [barOpen, setBarOpen] = React.useState(false);
   const { loading, error, data } = useQuery(GET_TEAM_MEMBERS, {
     variables: {
-      teamId: teamId
-    }
+      teamId: teamId,
+    },
   });
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!</p>;
-  console.log(data);
   //   const members = data.getTeamMembers;
   const members = data.getTeamMembers;
 
@@ -119,7 +110,7 @@ export default function DirectMessageModal({ teamId, open, onClose }) {
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
-          timeout: 500
+          timeout: 500,
         }}
       >
         <Fade in={open}>
@@ -145,7 +136,7 @@ export default function DirectMessageModal({ teamId, open, onClose }) {
                 <Form className={classes.form}>
                   <Autocomplete
                     items={data.getTeamMembers}
-                    onChange={selectedUser => {
+                    onChange={(selectedUser) => {
                       history.push(`/view-team/user/${teamId}/${selectedUser.id}`);
                       onClose();
                     }}

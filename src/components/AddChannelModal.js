@@ -14,11 +14,14 @@ import * as Yup from 'yup';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import { GET_ME } from '../graphql/teams';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import findIndex from 'lodash/findIndex';
+import MultiSelectUsers from './MultiSelectUsers';
 
 const CREATE_CHANNEL = gql`
-  mutation($teamId: Int!, $name: String!) {
-    createChannel(teamId: $teamId, name: $name) {
+  mutation($teamId: Int!, $name: String!, $public: Boolean, $members: [Int!]) {
+    createChannel(teamId: $teamId, name: $name, public: $public, members: $members) {
       ok
       channel {
         id
@@ -64,7 +67,13 @@ const AddChannelSchema = Yup.object().shape({
 
 export default function AddChannelModal({ teamId, open, onClose }) {
   const classes = useStyles();
+  const [state, setState] = React.useState({
+    checkedA: false,
+  });
 
+  const handleChange = (event) => {
+    setState({ ...state, [event.target.name]: event.target.checked });
+  };
   const [createChannel] = useMutation(CREATE_CHANNEL, {
     update: (cache, { data: { createChannel } }) => {
       const { ok, channel } = createChannel;
@@ -117,10 +126,11 @@ export default function AddChannelModal({ teamId, open, onClose }) {
               </Typography>
             </Container>
             <Formik
-              initialValues={{ channel: '' }}
+              initialValues={{ channel: '', public: true, members: [] }}
               validationSchema={AddChannelSchema}
               onSubmit={(values, { props, setSubmitting, setFieldError }) => {
                 setTimeout(async () => {
+                  const membersIdArr = values.members.map((m) => m.id);
                   teamId = parseInt(teamId);
                   await createChannel({
                     optimisticResponse: {
@@ -137,6 +147,8 @@ export default function AddChannelModal({ teamId, open, onClose }) {
                     variables: {
                       teamId,
                       name: values.channel,
+                      public: values.public,
+                      members: membersIdArr,
                     },
                   });
                   setSubmitting(false);
@@ -156,14 +168,37 @@ export default function AddChannelModal({ teamId, open, onClose }) {
                 }, 400);
               }}
             >
-              {({ values, errors, isSubmitting, resetForm }) => (
+              {({ values, errors, isSubmitting, resetForm, setFieldValue }) => (
                 <Form className={classes.form}>
                   <Grid container spacing={2}>
                     <Grid item xs={12}>
-                      <CustomTextField id="channel" name="channel" type="input" label="Channel" />
+                      <CustomTextField
+                        style={{ width: 500 }}
+                        id="channel"
+                        name="channel"
+                        type="input"
+                        label="Channel"
+                      />
                     </Grid>
                   </Grid>
-
+                  <div>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={!values.public}
+                          onChange={() => setFieldValue('public', !values.public)}
+                        />
+                      }
+                      label="Private Channel"
+                    />
+                    {values.public ? null : (
+                      <MultiSelectUsers
+                        value={values.members}
+                        handleChange={(e, value) => setFieldValue('members', value)}
+                        teamId={teamId}
+                      ></MultiSelectUsers>
+                    )}
+                  </div>
                   <Button
                     type="submit"
                     variant="contained"

@@ -12,9 +12,5 @@ export default function RenderText({ url }) {
     fetchText();
   }, []);
 
-  return (
-    <div>
-      <p>{text}</p>
-    </div>
-  );
+  return <span>{text}</span>;
 }
