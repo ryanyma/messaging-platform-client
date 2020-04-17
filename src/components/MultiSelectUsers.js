@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function MultiSelectUsers({ teamId, handleChange }) {
+export default function MultiSelectUsers({ teamId, placeholder, handleChange, currentUserId }) {
   const classes = useStyles();
   const { loading, error, data } = useQuery(GET_TEAM_MEMBERS, {
     variables: {
@@ -23,8 +23,7 @@ export default function MultiSelectUsers({ teamId, handleChange }) {
   });
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!</p>;
-  const teamMembers = data.getTeamMembers;
-
+  const teamMembers = data.getTeamMembers.filter((tm) => tm.id !== currentUserId);
   return (
     <div className={classes.root}>
       <Autocomplete
@@ -39,7 +38,7 @@ export default function MultiSelectUsers({ teamId, handleChange }) {
             style={{ width: 500 }}
             {...params}
             variant="standard"
-            placeholder="Select team members"
+            placeholder={placeholder}
           />
         )}
       />

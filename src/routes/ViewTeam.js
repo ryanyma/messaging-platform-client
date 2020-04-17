@@ -33,7 +33,7 @@ export default function ViewTeam({
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;
 
-  const { username, teams } = data.me;
+  const { id: currentUserId, username, teams } = data.me;
 
   if (!teams.length) {
     return (
@@ -80,6 +80,7 @@ export default function ViewTeam({
         }))}
         team={team}
         username={username}
+        currentUserId={currentUserId}
       />
       {channel && <MessageContainer channelId={channel.id} />}
       {channel && (

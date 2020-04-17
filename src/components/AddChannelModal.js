@@ -65,7 +65,7 @@ const AddChannelSchema = Yup.object().shape({
   channel: Yup.string().required('Please enter a team name.'),
 });
 
-export default function AddChannelModal({ teamId, open, onClose }) {
+export default function AddChannelModal({ teamId, open, onClose, currentUserId }) {
   const classes = useStyles();
   const [state, setState] = React.useState({
     checkedA: false,
@@ -196,6 +196,8 @@ export default function AddChannelModal({ teamId, open, onClose }) {
                         value={values.members}
                         handleChange={(e, value) => setFieldValue('members', value)}
                         teamId={teamId}
+                        placeholder="Select team members"
+                        currentUserId={currentUserId}
                       ></MultiSelectUsers>
                     )}
                   </div>

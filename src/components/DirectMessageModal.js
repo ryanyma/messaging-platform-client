@@ -5,22 +5,28 @@ import Backdrop from '@material-ui/core/Backdrop';
 import Button from '@material-ui/core/Button';
 import Fade from '@material-ui/core/Fade';
 import { Formik, Form, useField } from 'formik';
-import Grid from '@material-ui/core/Grid';
-import CustomTextField from '../components/CustomTextField';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import CloseIcon from '@material-ui/icons/Close';
-import * as Yup from 'yup';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
-import Snackbar from '@material-ui/core/Snackbar';
-import CustomAlert from '../components/CustomAlert';
-import normalizeErrors from '../normalizeErrors';
+import { useMutation } from '@apollo/react-hooks';
 import Downshift from 'downshift';
 import { useHistory } from 'react-router-dom';
-import FormControl from '@material-ui/core/FormControl';
 import TextField from '@material-ui/core/TextField';
 import { GET_TEAM_MEMBERS } from '../graphql/teams';
+import { GET_ME } from '../graphql/teams';
+import findIndex from 'lodash/findIndex';
+import MultiSelectUsers from './MultiSelectUsers';
+
+const GET_OR_CREATE_CHANNEL = gql`
+  mutation($teamId: Int!, $members: [Int!]!) {
+    getOrCreateChannel(teamId: $teamId, members: $members) {
+      id
+      name
+    }
+  }
+`;
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -42,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(3, 0, 2),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2),
+    margin: theme.spacing(3, 1, 2),
   },
   closeIcon: {
     cursor: 'pointer',
@@ -52,48 +58,35 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Autocomplete({ items, onChange }) {
-  console.log(items);
-  return (
-    <Downshift onChange={onChange}>
-      {({ getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex }) => (
-        <div>
-          <TextField {...getInputProps({ items: items })} />
-          {isOpen ? (
-            <div style={{ border: '1px solid #ccc' }}>
-              {items
-                .filter(
-                  (i) => !inputValue || i.username.toLowerCase().includes(inputValue.toLowerCase())
-                )
-                .map((item, index) => (
-                  <div
-                    {...getItemProps({ item })}
-                    key={item.id}
-                    style={{
-                      backgroundColor: highlightedIndex === index ? 'gray' : 'white',
-                      fontWeight: selectedItem === item ? 'bold' : 'normal',
-                    }}
-                  >
-                    {item.username}
-                  </div>
-                ))}
-            </div>
-          ) : null}
-        </div>
-      )}
-    </Downshift>
-  );
-}
-
-export default function DirectMessageModal({ teamId, open, onClose }) {
+export default function DirectMessageModal({ teamId, open, onClose, currentUserId }) {
   const classes = useStyles();
   const history = useHistory();
   const [barOpen, setBarOpen] = React.useState(false);
+  const [getOrCreateChannel] = useMutation(GET_OR_CREATE_CHANNEL, {
+    update: (cache, { data: { getOrCreateChannel } }) => {
+      const { id, name } = getOrCreateChannel;
+
+      const data = cache.readQuery({ query: GET_ME });
+      const teamIndex = findIndex(data.me.teams, ['id', teamId]);
+
+      const notInChannelList = data.me.teams[teamIndex].channels.every((c) => c.id !== id);
+      if (notInChannelList) {
+        data.me.teams[teamIndex].channels.push({ __typename: 'Channel', id, name, dm: true });
+        cache.writeQuery({
+          query: GET_ME,
+          data: data,
+        });
+      }
+      history.push(`/view-team/${teamId}/${id}`);
+    },
+  });
+
   const { loading, error, data } = useQuery(GET_TEAM_MEMBERS, {
     variables: {
       teamId: teamId,
     },
   });
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!</p>;
   //   const members = data.getTeamMembers;
@@ -127,20 +120,40 @@ export default function DirectMessageModal({ teamId, open, onClose }) {
               </Typography>
             </Container>
             <Formik
-              initialValues={{}}
-              onSubmit={(values, { props, setSubmitting, setFieldError, setErrors }) => {
-                onClose();
+              initialValues={{ members: [] }}
+              onSubmit={(values, { props, setSubmitting, setFieldError, setErrors, resetForm }) => {
+                setTimeout(async () => {
+                  const membersIdArr = values.members.map((m) => m.id);
+                  teamId = parseInt(teamId);
+                  const response = await getOrCreateChannel({
+                    variables: {
+                      teamId,
+                      members: membersIdArr,
+                    },
+                  });
+                  setSubmitting(false);
+                  resetForm();
+                  onClose();
+                }, 400);
               }}
             >
-              {({ values, errors, touched, isSubmitting, validateOnChange, validateOnBlur }) => (
+              {({
+                values,
+                errors,
+                touched,
+                setFieldValue,
+                isSubmitting,
+                validateOnChange,
+                validateOnBlur,
+              }) => (
                 <Form className={classes.form}>
-                  <Autocomplete
-                    items={data.getTeamMembers}
-                    onChange={(selectedUser) => {
-                      history.push(`/view-team/user/${teamId}/${selectedUser.id}`);
-                      onClose();
-                    }}
-                  />
+                  <MultiSelectUsers
+                    value={values.members}
+                    handleChange={(e, value) => setFieldValue('members', value)}
+                    teamId={teamId}
+                    placeholder="Select members to message"
+                    currentUserId={currentUserId}
+                  ></MultiSelectUsers>
                   <Button
                     type="submit"
                     variant="contained"
@@ -149,6 +162,15 @@ export default function DirectMessageModal({ teamId, open, onClose }) {
                     className={classes.submit}
                   >
                     Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    disabled={isSubmitting}
+                    className={classes.submit}
+                  >
+                    Start Messaging
                   </Button>
                 </Form>
               )}

@@ -16,6 +16,7 @@ export const GET_ME = gql`
         channels {
           id
           name
+          dm
         }
       }
     }
