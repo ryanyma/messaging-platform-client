@@ -45,7 +45,7 @@ export default function MessageContainerView({ data, subscribeToMore, channelId 
     return () => {
       unsubscribe();
     };
-  });
+  }, []);
 
   const classes = useStyles();
   const messages = data.getMessages;
