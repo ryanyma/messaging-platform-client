@@ -14,14 +14,14 @@ import RenderText from '../components/RenderText';
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    backgroundColor: '#F7F8FB',
+    backgroundColor: '#36393f',
   },
   inline: {
     display: 'inline',
   },
 }));
 
-const Message = ({ message: { url, text, filetype } }) => {
+const Message = ({ message: { url, style, text, filetype } }) => {
   if (url) {
     if (filetype.startsWith('image/')) {
       return <img src={url} alt="" />;

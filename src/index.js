@@ -77,9 +77,10 @@ const client = new ApolloClient({
 
 const GlobalStyles = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css?family=Open+Sans');
-  body {
+  html, body, #root {
     margin:0;
-    font-family: 'Open Sans', sans-serif;
+    font-family: Catamaran, Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-weight: 500;
     background-color: #F7F8FB;
   }
 

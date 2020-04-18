@@ -11,6 +11,7 @@ import AddIcon from '@material-ui/icons/Add';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import FileUpload from './FileUpload';
+import AttachButtonPlusIcon from '../utils/AttachButtonPlus';
 
 const Wrapper = styled.div`
   grid-column: 3;
@@ -18,6 +19,66 @@ const Wrapper = styled.div`
   margin: 20px;
   display: grid;
   grid-template-columns: 50px auto;
+  background: #ffffff;
+  opacity: 0.7;
+  border-radius: 5px;
+  background-color: #7d7f84;
+  display: flex;
+  align-items: center;
+`;
+
+const StyledDivider = styled.div`
+  margin: 0 0;
+  width: 1px;
+  height: 34px;
+  background-color: hsla(0, 0%, 100%, 0.1);
+`;
+
+const StyledAttachButton = styled.button`
+  background: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  background: #ffffff,
+  opacity: 0.7,
+  > div {
+    width: 24px;
+    height: 24px;
+    color: '#7d7f84 !important';
+    transition: all 0.2s ease;
+  }
+  :hover > div {
+    color: '#fff';
+    width: 26px;
+    height: 26px;
+  }
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+`;
+
+const StyledTextarea = styled.input`
+  margin: 2px 2px 2px 0;
+  background: 0;
+  border: 0;
+  outline: 0;
+  color: hsla(0, 0%, 100%, 0.7);
+  font-size: 0.9375rem;
+  letter-spacing: -0.025rem;
+  line-height: 1.25rem;
+  max-height: 144px;
+  min-height: 20px;
+  padding: 10px;
+  resize: none;
+  width: 100%;
 `;
 
 const useStyles = makeStyles((theme) => ({
@@ -43,15 +104,25 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-    backgroundColor: '#F7F8FB',
+    margin: '2px 2px 2px 0',
+    background: 0,
+    border: 0,
+    outline: 0,
+    color: 'hsla(0, 0%, 100%, 0.7)',
+    fontSize: '0.9375rem',
+    letterSpacing: '-0.025rem',
+    lineHeight: '1.25rem',
+    maxHeight: '144px',
+    minHeight: '20px',
+    padding: '10px',
+    resize: 'none',
+    width: '100%',
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
   textField: {
-    backgroundColor: '#F7F8FB',
+    backgroundColor: '#72767d',
   },
   button: {
     padding: 0,
@@ -69,10 +140,13 @@ export default function SendMessage({ placeholder, onSubmit, channelId }) {
   return (
     <Wrapper className={classes.textField}>
       <FileUpload channelId={channelId}>
-        <IconButton className={classes.button} aria-label="add">
-          <AddIcon />
-        </IconButton>
+        <StyledAttachButton>
+          <div>
+            <AttachButtonPlusIcon></AttachButtonPlusIcon>
+          </div>
+        </StyledAttachButton>
       </FileUpload>
+      <StyledDivider></StyledDivider>
       <Formik
         initialValues={{ message: '' }}
         onSubmit={async (values, { setSubmitting, resetForm }) => {
@@ -100,12 +174,15 @@ export default function SendMessage({ placeholder, onSubmit, channelId }) {
           // }
         }}
       >
-        {({ values, errors, isSubmitting }) => (
+        {({ values, errors, handleChange, handleBlur, isSubmitting }) => (
           <Form className={classes.form}>
-            <CustomTextField
+            <StyledTextarea
               id="message"
               name="message"
               type="input"
+              value={values.message}
+              onChange={handleChange}
+              onBlur={handleBlur}
               placeholder={`Message #${placeholder}`}
             />
           </Form>

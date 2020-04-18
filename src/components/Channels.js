@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 const ChannelWrapper = styled.div`
   grid-column: 2;
   grid-row: 1 / 4;
-  background-color: #4e3a4c;
+  background-color: #2f3136;
   color: #958993;
 `;
 
@@ -31,7 +31,7 @@ const SideBarListItem = styled.li`
   text-decoration: none;
   ${paddingLeft};
   &:hover {
-    background: #3e313c;
+    background: #36393f;
   }
 `;
 
@@ -57,6 +57,12 @@ const StyledGridContainer = styled(Grid)`
 
 const StyledLink = styled(Link)`
   text-decoration: none;
+  color: #72767d;
+`;
+
+const StyledHref = styled.a`
+  text-decoration: none;
+  color: #72767d;
 `;
 
 const Bubble = ({ on = true }) => (on ? <Green>●</Green> : '○');
@@ -69,9 +75,9 @@ const channel = ({ id, name }, teamId) => (
 
 const dmChannel = ({ id, name }, teamId) => (
   <SideBarListItem key={`user-${id}`}>
-    <Link to={`/view-team/${teamId}/${id}`}>
+    <StyledLink to={`/view-team/${teamId}/${id}`}>
       <Bubble /> {name}
-    </Link>
+    </StyledLink>
   </SideBarListItem>
 );
 
@@ -111,9 +117,12 @@ export default ({
     </div>
     {isOwner && (
       <div>
-        <a href="#invite-people" onClick={onInvitePeopleClick}>
+        <StyledHref href="#invite-people" onClick={onInvitePeopleClick}>
           + Invite people
-        </a>
+        </StyledHref>
+        {/* <a href="#invite-people" onClick={onInvitePeopleClick}>
+          + Invite people
+        </a> */}
       </div>
     )}
   </ChannelWrapper>

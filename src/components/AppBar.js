@@ -7,22 +7,21 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import styled from 'styled-components';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
   appbar: {
-    backgroundColor: '#F7F8FB',
+    backgroundColor: '#36393f',
     boxShadow: 'none',
     alignItems: 'center',
   },
   typography: {
-    color: 'black'
-
-  }
+    color: 'black',
+  },
 }));
 
-export default function DenseAppBar({channelName}) {
+export default function DenseAppBar({ channelName }) {
   const classes = useStyles();
 
   return (
