@@ -24,6 +24,7 @@ const GET_OR_CREATE_CHANNEL = gql`
     getOrCreateChannel(teamId: $teamId, members: $members) {
       id
       name
+      dm
     }
   }
 `;

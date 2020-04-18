@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { gql } from 'apollo-boost';
 import { useQuery, useSubscription } from '@apollo/react-hooks';
 import MessageContainerView from './MessageContainerView';
 
 const GET_MESSAGES = gql`
-  query($channelId: Int!) {
-    getMessages(channelId: $channelId) {
+  query($cursor: String, $channelId: Int!) {
+    getMessages(cursor: $cursor, channelId: $channelId) {
       id
       text
       user {
@@ -33,7 +33,8 @@ const MESSAGE_SUBSCRIPTION = gql`
   }
 `;
 export default function MessageContainer({ channelId }) {
-  const { loading, error, data, subscribeToMore } = useQuery(GET_MESSAGES, {
+  const [hasMore, setHasMore] = useState(true);
+  const { loading, error, data, fetchMore, subscribeToMore } = useQuery(GET_MESSAGES, {
     variables: {
       channelId: channelId,
     },
@@ -42,6 +43,36 @@ export default function MessageContainer({ channelId }) {
 
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;
+
+  const messages = data.getMessages;
+
+  const _loadMore = () => {
+    return fetchMore({
+      query: GET_MESSAGES,
+      notifyOnNetworkStatusChange: true,
+      variables: {
+        channelId: channelId,
+        cursor: messages[messages.length - 1].createdAt,
+      },
+      updateQuery: (previousResult, { fetchMoreResult }) => {
+        if (!fetchMoreResult) {
+          return previousResult;
+        }
+
+        if (fetchMoreResult.getMessages.length < 35) {
+          setHasMore(false);
+        }
+        // console.log(previousResult.getMessages);
+        // console.log('sep');
+        // console.log(fetchMoreResult.getMessages);
+
+        return {
+          ...previousResult,
+          getMessages: [...previousResult.getMessages, ...fetchMoreResult.getMessages],
+        };
+      },
+    });
+  };
 
   const _subscribeToNewMessages = () => {
     const unsubscribe = subscribeToMore({
@@ -59,7 +90,7 @@ export default function MessageContainer({ channelId }) {
         //       comments: [newFeedItem, ...prev.entry.comme
         return {
           ...prev,
-          getMessages: [...prev.getMessages, subscriptionData.data.newChannelMessage],
+          getMessages: [subscriptionData.data.newChannelMessage, ...prev.getMessages],
         };
       },
     });
@@ -69,6 +100,8 @@ export default function MessageContainer({ channelId }) {
   return (
     <MessageContainerView
       data={data}
+      loadMore={_loadMore}
+      hasMore={hasMore}
       subscribeToMore={_subscribeToNewMessages}
       channelId={channelId}
     ></MessageContainerView>

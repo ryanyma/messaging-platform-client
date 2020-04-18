@@ -26,6 +26,7 @@ const CREATE_CHANNEL = gql`
       channel {
         id
         name
+        dm
       }
     }
   }
@@ -141,6 +142,7 @@ export default function AddChannelModal({ teamId, open, onClose, currentUserId }
                           __typename: 'Channel',
                           id: -1,
                           name: values.channel,
+                          dm: false,
                         },
                       },
                     },

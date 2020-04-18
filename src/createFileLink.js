@@ -84,8 +84,7 @@ export default ({ uri, includeExtensions, ...requestOptions } = {}) => {
         const myHeaders = {
           accept: '*/*',
         };
-        console.log(variables);
-        console.log(serializedBody);
+
         if (has(variables, 'file')) {
           const stringBody = serializedBody;
           serializedBody = new FormData();
@@ -94,7 +93,7 @@ export default ({ uri, includeExtensions, ...requestOptions } = {}) => {
         } else {
           myHeaders['content-type'] = 'application/json';
         }
-        console.log(serializedBody);
+
         let options = fetchOptions;
         if (requestOptions.fetchOptions) options = { ...requestOptions.fetchOptions, ...options };
         const fetcherOptions = {

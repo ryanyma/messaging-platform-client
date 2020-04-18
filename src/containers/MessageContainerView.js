@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, createRef, useState } from 'react';
 import Messages from '../components/Messages';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
@@ -39,7 +39,18 @@ const Message = ({ message: { url, style, text, filetype } }) => {
   }
   return <span>{text}</span>;
 };
-export default function MessageContainerView({ data, subscribeToMore, channelId }) {
+export default function MessageContainerView({
+  data,
+  hasMore,
+  loadMore,
+  subscribeToMore,
+  channelId,
+}) {
+  const classes = useStyles();
+  let scroller = createRef();
+
+  const messages = data.getMessages;
+  const [prevMessages, setMessages] = useState([]);
   useEffect(() => {
     const unsubscribe = subscribeToMore();
     return () => {
@@ -47,47 +58,64 @@ export default function MessageContainerView({ data, subscribeToMore, channelId 
     };
   }, []);
 
-  const classes = useStyles();
-  const messages = data.getMessages;
+  useEffect(() => {
+    if (prevMessages.length > 0 && messages && messages[0].id !== prevMessages[0].id) {
+      console.log('fuckkk');
+      scroller.current.scrollTop = scroller.current.scrollHeight - scroller.current.clientHeight;
+    }
+  }, [messages]);
+
+  const handleScroll = () => {
+    console.log(messages);
+    if (
+      scroller &&
+      scroller.current.scrollTop < 100 &&
+      hasMore &&
+      messages.length >= 35 &&
+      prevMessages.length !== messages.length
+    ) {
+      setMessages(messages);
+      loadMore();
+    }
+  };
 
   return (
-    <Messages>
+    <Messages onScroll={handleScroll} ref={scroller}>
       <FileUpload
         style={{
-          gridColumn: 3,
-          gridRow: 2,
-          backgroundColor: '#F7F8FB',
           display: 'flex',
-          flexdirection: 'column-reverse',
-          overflowY: 'auto',
+          flexDirection: 'column-reverse',
         }}
         disableClick
         channelId={channelId}
       >
         <List className={classes.root}>
-          {messages.map((m) => (
-            <ListItem key={`${m.id}-message`} alignItems="flex-start">
-              {/* <ListItemAvatar>
+          {messages
+            .slice()
+            .reverse()
+            .map((m) => (
+              <ListItem key={`${m.id}-message`} alignItems="flex-start">
+                {/* <ListItemAvatar>
               <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
             </ListItemAvatar> */}
-              <ListItemText
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      className={classes.inline}
-                      color="textPrimary"
-                    >
-                      {m.user.username} {new Date(parseInt(m.createdAt, 10)).toString()}
-                    </Typography>
-                    <br></br>
-                    <Message message={m} />
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
-          ))}
+                <ListItemText
+                  secondary={
+                    <React.Fragment>
+                      <Typography
+                        component="span"
+                        variant="body2"
+                        className={classes.inline}
+                        color="textPrimary"
+                      >
+                        {m.user.username} {new Date(parseInt(m.createdAt, 10)).toString()}
+                      </Typography>
+                      <br></br>
+                      <Message message={m} />
+                    </React.Fragment>
+                  }
+                />
+              </ListItem>
+            ))}
         </List>
       </FileUpload>
     </Messages>
