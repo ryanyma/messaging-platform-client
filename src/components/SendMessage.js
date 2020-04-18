@@ -11,7 +11,7 @@ import AddIcon from '@material-ui/icons/Add';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import FileUpload from './FileUpload';
-import AttachButtonPlusIcon from '../utils/AttachButtonPlus';
+import AttachButton from '../utils/AttachButton';
 
 const Wrapper = styled.div`
   grid-column: 3;
@@ -19,12 +19,12 @@ const Wrapper = styled.div`
   margin: 20px;
   display: grid;
   grid-template-columns: 50px auto;
-  background: #ffffff;
-  opacity: 0.7;
+
   border-radius: 5px;
-  background-color: #7d7f84;
+
   display: flex;
   align-items: center;
+  background-color: #ffc0cb;
 `;
 
 const StyledDivider = styled.div`
@@ -32,37 +32,6 @@ const StyledDivider = styled.div`
   width: 1px;
   height: 34px;
   background-color: hsla(0, 0%, 100%, 0.1);
-`;
-
-const StyledAttachButton = styled.button`
-  background: 0;
-  padding: 0;
-  margin: 0;
-  border: 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  flex: 0 0 auto;
-  background: #ffffff,
-  opacity: 0.7,
-  > div {
-    width: 24px;
-    height: 24px;
-    color: '#7d7f84 !important';
-    transition: all 0.2s ease;
-  }
-  :hover > div {
-    color: '#fff';
-    width: 26px;
-    height: 26px;
-  }
-  svg {
-    width: 100%;
-    height: 100%;
-  }
 `;
 
 const StyledTextarea = styled.input`
@@ -108,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
     background: 0,
     border: 0,
     outline: 0,
-    color: 'hsla(0, 0%, 100%, 0.7)',
+    color: '#ffc0cb',
     fontSize: '0.9375rem',
     letterSpacing: '-0.025rem',
     lineHeight: '1.25rem',
@@ -122,7 +91,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(3, 0, 2),
   },
   textField: {
-    backgroundColor: '#72767d',
+    backgroundColor: '#484C52',
   },
   button: {
     padding: 0,
@@ -140,11 +109,7 @@ export default function SendMessage({ placeholder, onSubmit, channelId }) {
   return (
     <Wrapper className={classes.textField}>
       <FileUpload channelId={channelId}>
-        <StyledAttachButton>
-          <div>
-            <AttachButtonPlusIcon></AttachButtonPlusIcon>
-          </div>
-        </StyledAttachButton>
+        <AttachButton></AttachButton>
       </FileUpload>
       <StyledDivider></StyledDivider>
       <Formik
