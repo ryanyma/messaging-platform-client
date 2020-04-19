@@ -16,8 +16,8 @@ import * as Yup from 'yup';
 import Snackbar from '@material-ui/core/Snackbar';
 import { gql } from 'apollo-boost';
 import { useHistory } from 'react-router-dom';
-
 import { useMutation } from '@apollo/react-hooks';
+import { wsLink } from '../index';
 
 const LOGIN_USER = gql`
   mutation($email: String!, $password: String!) {
@@ -118,6 +118,7 @@ export default function Login() {
                   setSubmitting(false);
                   localStorage.setItem('token', token);
                   localStorage.setItem('refreshToken', refreshToken);
+                  wsLink.subscriptionClient.tryReconnect();
                   history.push('/view-team');
                 } else {
                   setFieldError('general', errors[0].message);

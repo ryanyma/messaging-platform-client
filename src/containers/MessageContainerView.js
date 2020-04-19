@@ -66,7 +66,7 @@ export default function MessageContainerView({
   }, [messages]);
 
   const handleScroll = () => {
-    console.log(messages);
+    console.log(hasMore);
     if (
       scroller &&
       scroller.current.scrollTop < 100 &&

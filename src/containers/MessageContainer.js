@@ -49,18 +49,23 @@ export default function MessageContainer({ channelId }) {
   const _loadMore = () => {
     return fetchMore({
       query: GET_MESSAGES,
-      notifyOnNetworkStatusChange: true,
       variables: {
         channelId: channelId,
         cursor: messages[messages.length - 1].createdAt,
+      },
+      options: {
+        fetchPolicy: 'cache-and-network',
       },
       updateQuery: (previousResult, { fetchMoreResult }) => {
         if (!fetchMoreResult) {
           return previousResult;
         }
-
+        console.log('hi');
         if (fetchMoreResult.getMessages.length < 35) {
+          console.log('fuckkkk');
           setHasMore(false);
+        } else {
+          setHasMore(true);
         }
         // console.log(previousResult.getMessages);
         // console.log('sep');
